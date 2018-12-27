@@ -269,6 +269,10 @@ class Question(models.Model):
 
 ### 5.2. 添加应用
 
+但是我们的投票应用在哪呢？它没在索引页面里显示。
+
+只需要做一件事：我们得告诉管理页面，问题 Question 对象需要被管理。打开 polls/admin.py 文件，把它编辑成下面这样：
+
 ```python
 #! /usr/bin/python3
 # -*-coding:utf8 -*-
@@ -280,3 +284,9 @@ from .models import Question
 
 admin.site.register(Question))
 ```
+
+打开admin管理界面，显示如下：
+
+![django-learning-2](https://github.com/guijiyang/markdownDoc/raw/master/img/django%20learning--2.png "django-learning")
+
+在这里可以添加、修改和删除访问管理员站点的用户，也可以添加投票的问题，如果包含了blog应用，也可以添加blog信息。
