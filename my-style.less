@@ -1,6 +1,14 @@
 @charset "utf-8";
 
 .markdown-preview.markdown-preview {
+  font-family: 'Courier New', 'Simsun', sans-serif;
+  font-size  : 16px; // 改变字体大小
+
+  label {
+    color              : #d40ca9;
+    // background-color: #0069d6;
+    font-size          : 12px;
+  }
 
   /** * vscode-markdown.css */
   blockquote,
@@ -11,33 +19,68 @@
   h5,
   h6,
   p {
-    margin: 0;
-    padding: 0;
+    margin        : 0;
+    padding       : 0;
+    // font-family: 'Simsun';
   }
-  background-color: rgba(172, 194, 110, 0.651);
+
+  // background-color: rgba(172, 194, 110, 0.651);
   body {
-    font-family: "PingFang SC", "Hiragino Sans GB", Helvetica, Arial, sans-serif;
-    padding: 1em;
-    margin: auto;
-    max-width: 42em;
-    color: #737373;
+    font-family     : "PingFang SC", "Hiragino Sans GB", Helvetica, Arial, sans-serif;
+    padding         : 1em;
+    margin          : auto;
+    max-width       : 42em;
+    color           : #e7dfdf;
     background-color: rgba(172, 194, 110, 0.651);
-    margin: 10px 13px;
+    margin          : 10px 13px;
+  }
+
+  mark {
+    background-color: #b4afb3;
+    color           : #bd2f86
   }
 
   table {
-    margin: 10px 0 15px;
+    margin         : 10px;
     border-collapse: collapse;
-  }
-
-  td,
-  th {
-    border: 1px solid #ddd;
-    padding: 3px 10px;
+    // border-bottom  : 1px solid silver;
+    // border-right   : 1px solid silver;
+    width          : 100%;
   }
 
   th {
-    padding: 5px 10px;
+    font          : bold 16px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+    color         : #386672;
+    border-right  : 1px solid #C1DAD7;
+    border-bottom : 1px solid #C1DAD7;
+    border-top    : 1px solid #C1DAD7;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align    : middle;
+    padding       : 6px 6px 6px 12px;
+    background    : #e7ebc8 no-repeat;
+  }
+
+  tr:nth-child(even){background-color: #f2f2f2}
+  // tr:hover {background-color:#f5f5f5;}
+  // table tr:nth-child(even) {
+  //   background-color: #ccc;
+  // }
+
+  // th.nobg { 
+  // border-top  : 0; 
+  // border-left : 0; 
+  // border-right: 1px solid #C1DAD7; 
+  // background  : none; 
+  // } 
+
+  td {
+    border-right : 1px solid #C1DAD7;
+    border-bottom: 1px solid #C1DAD7;
+    background   : #fff;
+    font-size    : 16px;
+    padding      : 6px 6px 6px 12px;
+    color        : #423b2f;
   }
 
   a {
@@ -45,7 +88,7 @@
   }
 
   a:hover {
-    color: #0050a3;
+    color          : #0050a3;
     text-decoration: none;
   }
 
@@ -64,124 +107,190 @@
   h5,
   h6 {
     line-height: 36px;
+    font-family: 'Simsun';
+    font-style : initial;
+    font-weight: bold;
   }
 
   h1 {
-    color: #0b0da7;
-    margin-bottom: 18px;
-    font-size: 30px;
+    color        : #040413;
+    margin-bottom: 20px;
+    font-size    : 30px;
   }
 
   h2 {
-    color: #2d778a;
-    font-size: 24px;
+    color        : #000000;
+    font-size    : 26px;
+    margin-top   : 16px;
+    margin-bottom: 16px;
   }
 
   h3 {
-    color: #ee5f0c;
-    font-size: 20px;
+    color        : #101000;
+    font-size    : 22px;
+    margin-top   : 12px;
+    margin-bottom: 12px;
   }
 
   h4 {
-    color: #7c1262;
-    font-size: 16px;
+    color        : #000010;
+    font-size    : 18px;
+    margin-top   : 10px;
+    margin-bottom: 10px;
   }
 
   h5 {
-    font-size: 14px;
+    color        : #001000;
+    font-size    : 16px;
+    margin-top   : 8px;
+    margin-bottom: 8px;
   }
 
   h6 {
-    font-size: 13px;
+    color        : #101010;
+    font-size    : 14px;
+    margin-top   : 6px;
+    margin-bottom: 6px;
   }
 
   hr {
-    margin: 0 0 19px;
-    border: 0;
+    margin       : 0 0 19px;
+    border       : 0;
     border-bottom: 1px solid #ccc;
   }
 
   blockquote {
-    color: #666666;
-    margin: 0;
+    color       : #666666;
+    margin      : 0;
     padding-left: 3em;
-    border-left: .5em #EEE solid;
-    font-family: "STKaiti", georgia, serif;
+    border-left : .5em #EEE solid;
+    font-family : "STKaiti", georgia, serif;
   }
 
-  code,
-  pre {
-    font-family: Monaco, Andale Mono, Courier New, monospace;
-    font-size: 12px;
-  }
+  // code,
+  // pre {
+  //   background-color     : #50556B;
 
-  code {
-    background-color: #ffffe0;
-    border: 1px solid orange;
-    color: rgba(0, 0, 0, 0.75);
-    padding: 1px 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
-    border-radius: 3px;
-  }
+  // }
+
+
 
   pre {
-    display: block;
-    background-color: #f8f8f8;
-    border: 1px solid #2f6fab;
-    border-radius: 3px;
-    overflow: auto;
-    padding: 14px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+    font-family        : Monaco, Andale Mono, Courier New, monospace;
+    font-size          : 12px;
+    display            : block;
+    background-color   : #e6e7d7d5;
+    // border          : 1px solid #2f6fab;
+    color              : rgba(56, 59, 219, 0.884);
+    border-radius      : 3px;
+    overflow           : auto;
+    padding            : 14px;
+    white-space        : pre-wrap;
+    word-wrap          : break-word;
   }
+
+  // code {
+  //   background-color        : #f8f8f8;
+  //   border                  : 1px solid orange;
+  //   color                   : rgba(235, 207, 235, 0.75);
+  //   padding                 : 1px 3px;
+  //   -webkit-border-radius   : 3px;
+  //   -moz-border-radius      : 3px;
+  //   border-radius           : 3px;
+  // }
 
   pre code {
-    background-color: inherit;
-    border: none;
-    padding: 0;
+    // background-color     : #50556B;
+    border                  : none;
+    padding                 : 0;
   }
 
   sup {
-    font-size: .83em;
+    font-size     : .83em;
     vertical-align: super;
-    line-height: 0;
+    line-height   : 0;
   }
 
   * {
     -webkit-print-color-adjust: exact;
   }
+
   @media screen and (min-width: 914px) {
     body {
-      width: 854px;
+      width : 854px;
       margin: 10px auto;
     }
   }
+
   @media print {
-    body,
-    code,
+    font-family: 'Times New Roma', sans-serif;
+    font-size  : 16px; // 改变字体大小
+
+    #cv {
+      width: 100%;
+    }
+
+    /** * vscode-markdown.css */
+    blockquote,
     h1,
     h2,
     h3,
     h4,
     h5,
     h6,
-    pre code {
-      color: black;
+    p {
+      margin : 0;
+      padding: 0;
     }
 
-    pre,
+    // background-color: rgba(172, 194, 110, 0.651);
+    body {
+      font-family     : "PingFang SC", "Hiragino Sans GB", Helvetica, Arial, sans-serif;
+      padding         : 1em;
+      margin          : auto;
+      max-width       : 42em;
+      color           : #737373;
+      background-color: rgba(172, 194, 110, 0.651);
+      margin          : 10px 13px;
+    }
+
     table {
-      page-break-inside: avoid;
+      margin         : 10px 0 15px;
+      border-collapse: collapse;
     }
-  }
-}
 
-// #my-id {
-  .my-preview.my-test {
+    label {
+      color              : #d40ca9;
+      // background-color: #0069d6;
+      font-size          : 12px;
+    }
 
-    background-color: #222;
-    color: #fff;
+    td,
+    th {
+      border : 1px solid #ddd;
+      padding: 3px 10px;
+    }
+
+    th {
+      padding: 5px 10px;
+    }
+
+    a {
+      color: #0069d6;
+    }
+
+    a:hover {
+      color          : #0050a3;
+      text-decoration: none;
+    }
+
+    a img {
+      border: none;
+    }
+
+    p {
+      margin-bottom: 9px;
+    }
 
     h1,
     h2,
@@ -189,7 +298,73 @@
     h4,
     h5,
     h6 {
-      color: #fff;
+      line-height: 36px;
+    }
+
+    h1 {
+      color        : #0b0da7;
+      margin-bottom: 18px;
+      font-size    : 30px;
+    }
+
+    h2 {
+      color    : #2d778a;
+      font-size: 24px;
+    }
+
+    h3 {
+      color    : #ee5f0c;
+      font-size: 20px;
+    }
+
+    h4 {
+      color    : #7c1262;
+      font-size: 16px;
+    }
+
+    h5 {
+      font-size: 14px;
+    }
+
+    h6 {
+      font-size: 13px;
+    }
+
+    hr {
+      margin       : 0 0 19px;
+      border       : 0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    blockquote {
+      color       : #666666;
+      margin      : 0;
+      padding-left: 3em;
+      border-left : .5em #EEE solid;
+      font-family : "STKaiti", georgia, serif;
+    }
+
+
+    * {
+      -webkit-print-color-adjust: exact;
     }
   }
+}
+
+// #my-id {
+.my-preview.my-test {
+
+  background-color: #222;
+  color           : #fff;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #fff;
+  }
+}
+
 // }
