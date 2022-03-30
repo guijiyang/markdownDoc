@@ -180,10 +180,10 @@ install(
     Devel
 )
 ```
-The CMakePackageConfigHelpers module provides a macro for creating a simple ConfigVersion.cmake file. This file sets the version of the package. It is read by CMake when find_package() is called to determine the compatibility with the requested version, and to set some version-specific variables <PackageName>_VERSION, <PackageName>_VERSION_MAJOR, <PackageName>_VERSION_MINOR etc.The install(EXPORT) command is used to export the targets in the ClimbingStatsTargets export-set, defined previously by the install(TARGETS) command. This command generates the ClimbingStatsTargets.cmake file to contain IMPORTED targets, suitable for use by downstreams and arranges to install it to lib/cmake/ClimbingStats. The generated ClimbingStatsConfigVersion.cmake and a cmake/ClimbingStatsConfig.cmake are installed to the same location, completing the package。
-生成的IMPORTED目标有合适的属性来定义他们的应用需求，比如INTERFACE_INCLUDE_DIRECTORIES, INTERFACE_COMPILE_DEFINITIONS和其他无关内建接口属性。在COMPATIBLE_INTERFACE_STRING和其他COMPATIBLE INTERFACE properties中列出的用户定义属性的INTERFACE变体也被传播到生成的导入目标。
-带有双冒号的NAMESPACE是在导出安装目标时指定的。这种双冒号的约定给了CMake一个提示，当它被下游用target link libraries()命令使用时，它是一个IMPORTED目标。这样，如果还没有找到提供诊断的包，CMake可以发出诊断。
-在本例中，当使用install(TARGETS)时，指定了INCLUDES DESTINATION。这将导致导入的目标在CMAKE INSTALL PREFIX中使用包含目录填充其接口包含目录。当IMPORTED目标被下游使用时，它会自动使用来自该属性的条目。
+CMakePackageConfigHelpers 模块提供了一个用于创建简单 ConfigVersion.cmake 文件的宏。 此文件设置包的版本。 CMake 在调用 find_package() 时读取它以确定与请求版本的兼容性，并设置一些特定于版本的变量 _VERSION、 _VERSION_MAJOR、 _VERSION_MINOR 等。 install(EXPORT) 命令用于导出 ClimbingStatsTargets 中的目标 导出集，之前由 install(TARGETS) 命令定义。 此命令生成 ClimbingStatsTargets.cmake 文件以包含 IMPORTED 目标，适合下游使用，并安排将其安装到 lib/cmake/ClimbingStats。 生成的 ClimbingStatsConfigVersion.cmake 和一个 cmake/ClimbingStatsConfig.cmake 安装到同一个位置，完成打包。
+生成的IMPORTED目标有合适的属性来定义他们的应用需求，比如 INTERFACE_INCLUDE_DIRECTORIES, INTERFACE_COMPILE_DEFINITIONS 和其他无关内建接口属性。在COMPATIBLE_INTERFACE_STRING 和其他 COMPATIBLE_INTERFACE_properties 中列出的用户定义属性的INTERFACE变体也被传播到生成的导入目标。
+带有双冒号的NAMESPACE是在导出安装目标时指定的。这种双冒号的约定给了CMake一个提示，当它被下游用 target_link_libraries() 命令使用时，它是一个 IMPORTED 目标。这样，如果还没有找到提供诊断的包，CMake可以发出诊断。
+在本例中，当使用install(TARGETS)时，指定了 INCLUDES_DESTINATION 。这会导致 IMPORTED 目标的 INTERFACE_INCLUDE_DIRECTORIES 填充有 CMAKE_INSTALL_PREFIX 中的包含目录。 当下游使用 IMPORTED 目标时，它会自动使用该属性中的条目。
 
 # 创建一个包配置文件
 `ClimbingStatsConfig.cmake`文件可以简单如下：
