@@ -144,3 +144,23 @@ git revert 命令的好处就是不会丢掉别人的提交，即使你撤销后
 =======
 
 - 错的太远了直接将代码全部删掉，用正确代码替代
+
+## 显示日志
+```shell
+# 显示粗略信息
+git log
+# 显示详细信息
+git log -p
+# 显示相对详细信息
+git log --stat
+# 显示某一次更改
+git show <commitid>
+# 显示某一次更改的某文件
+git show <commitid> <filename>
+# 查看缓存区和上次提交的不同
+git diff --staged
+# 对比工作目录和缓存区
+git diff # 可是显示工作目录和暂存区之间的不同
+# 对比工作目录和上一条提交
+git diff HEAD # 可以显示工作目录和上一条提交之间不同，就是说：如果你现在把所有的文件都 add 然后 git commit，你将会提交什么
+```
