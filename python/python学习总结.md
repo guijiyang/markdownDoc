@@ -47,9 +47,13 @@
     - [运算符重载](#运算符重载)
   - [并行执行](#并行执行)
     - [多进程————基于进程的并行](#多进程基于进程的并行)
+      - [start method](#start-method)
+      - [多进程使用的准则](#多进程使用的准则)
     - [concurrent.futures————启动并行任务](#concurrentfutures启动并行任务)
+      - [执行对象](#执行对象)
       - [ProcessPoolExecutor](#processpoolexecutor)
       - [Future对象](#future对象)
+      - [Module Functions](#module-functions)
   - [网络和进程间通讯](#网络和进程间通讯)
     - [异步IO](#异步io)
       - [协程和任务](#协程和任务)
@@ -769,17 +773,90 @@ if __name__=='__main__':
   p.start()
   p.join()
 ```
-### concurrent.futures————启动并行任务
-`class concurrent.futures.Executor`
-An abstract class that provides methods to execute calls asynchronously. It should not be used directly, but through its concrete subclasses.
+#### start method
+```python
+import  multiprocessing as mp
+print(mp.get_start_method())
+```
+上述代码可以获取生成多进程的方式。
+- spawn : windows 下默认的生成方式，只继承父进程必要的资源；
+- fork : unix系统下的默认生成方式，继承父进程的所以资源；
+- forkserver : unix系统下的生成一个服务进程，不继承父进程的资源。
+spawn和forkserver会在创建时同步创建一个进程用于资源追踪。window系统下只有spawn方式，unix系统下可以使用三种生成方式。可以使用下面的方法设置进程生成方式：
+```python
+import multiprocessing as mp 
+mp.set_start_method('spawn')
+```
+#### 多进程使用的准则
+**Explicitly pass resources to child processes**:
+On Unix using the fork start method, a child process can make use of a shared resource created in a
+parent process using a global resource. However, it is better to pass the object as an argument to the
+constructor for the child process.
 
+Apart from making the code (potentially) compatible with Windows and the other start methods this
+also ensures that as long as the child process is still alive the object will not be garbage collected in the
+parent process. This might be important if some resource is freed when the object is garbage collected
+in the parent process.
+
+
+**Avoid shared state**:
+As far as possible one should try to avoid shifting large amounts of data between processes.
+It is probably best to stick to using queues or pipes for communication between processes rather than
+using the lower level synchronization primitives.
+
+**Picklability**：
+Ensure that the arguments to the methods of proxies are picklable.
+
+
+### concurrent.futures————启动并行任务
+concurrent.futures 模块为异步执行可调用对象提供了高级接口。
+可以使用线程ThreadPoolExecutor或单独的进程 ProcessPoolExecutor 执行异步调用。 两者都实现了相同的接口，该接口由抽象 Executor 类定义。
+#### 执行对象
+`class concurrent.futures.Executor`
+提供异步执行调用的方法的抽象类。 不应该直接使用，而是使用它的具体子类。
+- submit(fn, /, *args, **kwargs)：
+安排可调用的 fn 作为 fn(*args, **kwargs) 执行并返回一个表示可调用的执行的未来对象。
+  ```python
+  with ThreadPoolExecutor(max_workers=1) as executor:
+  future = executor.submit(pow, 323, 1235)
+  print(future.result())
+  ```
+- map(func, *iterables, timeout=None, chunksize=1):
+类似于 map(func, *iterables) 除了：
+• iterables 被立即收集而不是延迟收集；
+• func 是异步执行的，对 func 的多个调用可以同时进行
+  返回的迭代器会引发 concurrent.futures.TimeoutError--如果__next__() 被调用，但对 Executor.map() 的调用 timeout 秒后结果不可用时。 timeout 可以是 int 或 float。 如果超时不是没有指定或None，等待时间没限制。
+
+  使用 ProcessPoolExecutor 时，此方法可将其分成多个块，并作为单独的任务提交给进程池。 这些块的（近似）大小可以通过将 chunksize 设置为正整数来指定。 对于非常长的迭代，使用较大的chunksize值与默认大小 1 相比可以显着提高性能。使用ThreadPoolExecutor，chunksize 没有效果。
+
+- shutdown(wait=True, *, cancel_futures=False)：
+  向执行器发出信号，等待当前的正在处理的未来对象执行完，再释放所有使用的资源；在该函数调用后调用 Executor.submit() 或 Executor.map() 会触发 RuntimeError。
+
+  如果 wait 为 True 则此方法将不会返回，直到所有未执行的未来对象都执行完毕，并且与执行者相关的资源已被释放；如果为 False ，等待当前的正在处理的未来对象执行完，这个方法将立即返回并释放与执行程序相关的资源。 不管 wait 的值如何，整个 Python 在所有未来对象执行完之前，程序不会退出。
+
+  如果 cancel_futures 为 True，此方法将取消所有等待执行的未来对象，任何已完成或正在运行的未来对象都不会被取消，无论cancel_futures 的值是什么。
+
+  如果 wait 和 cancel_futures 都为 True，所有已经开始执行的未来对象都会执行完，该方法才会返回，剩余的等待执行的未来对象将被取消。
+  
+  如果使用 with 语句，可以避免显式调用此方法，这将关闭 Executor（等待就好像 Executor.shutdown() 被调用时等待设置为真）：
+  ```python
+  import shutil
+  with ThreadPoolExecutor(max_workers=4) as e:
+  e.submit(shutil.copy, 'src1.txt', 'dest1.txt')
+  e.submit(shutil.copy, 'src2.txt', 'dest2.txt')
+  e.submit(shutil.copy, 'src3.txt', 'dest3.txt')
+  e.submit(shutil.copy, 'src4.txt', 'dest4.txt')
+
+  ```
 #### ProcessPoolExecutor
-The ProcessPoolExecutor class is an Executor subclass that uses a pool of processes to execute calls
-asynchronously. ProcessPoolExecutor uses the multiprocessing module, which allows it to side-step
-the Global Interpreter Lock but also means that only picklable objects can be executed and returned.
+ProcessPoolExecutor 类是 Executor 子类，它使用进程池异步执行调用。 ProcessPoolExecutor 使用多处理模块，这允许它绕过全局解释器锁，但也意味着只能执行和返回可提取(picklable)对象。
+
 `class concurrent.futures.ProcessPoolExecutor(max_workers=None, mp_context=None,
 initializer=None, initargs=())`
-一个执行器使用一个最多`max_workers`进程数量的进程池异步调用。在window中，`max_workers`不能大于61。`mp_context`是一个多处理器上下文或None，将会用于启动共工作进程。如果`mp_context`是None或未给定，默认的多处理器上下文将被使用
+
+一个执行器使用一个最多`max_workers`进程数量的进程池异步调用。在window中，`max_workers`不能大于61。`mp_context`是一个多处理器上下文或None，将会用于启动工作进程。如果`mp_context`是None或未给定，将使用默认的多处理器上下文。
+
+initializer 是一个可选的可调用对象，在每个工作进程开始时被调用； initargs 是传递给初始化器的参数元组。 如果初始化程序引发异常，所有当前挂起的作业以及任何向池提交更多作业的尝试都将引发一个 BrokenProcessPool。
 ```python
 import concurrent.futures
 import math
@@ -816,6 +893,19 @@ if __name__ == '__main__':
 ```
 #### Future对象
 `Future`类封装了对可调用对象的异步执行。`Future`实例由`Executor.submit()`创建，但是不要直接创建除非用于测试。
+#### Module Functions
+`concurrent.futures.wait(fs, timeout=None, return_when=ALL_COMPLETED)`
+等待 fs 给定的 Future 实例（可能由不同的 Executor 实例创建）完成。fs 中重复的未来对象将被删除，并且只会返回一次。 返回一个命名的 2 元集合，第一个集合，名为 done，包含在等待之前完成（完成或取消的未来对象）的未来对象。 第二组，名为 not_done，包含未完成的未来对象（待定或运行未来对象）。
+timeout 用来控制方法返回前的最大等待时间。如果 timeout 未指定或 None ，将没有等待时限。
+return_when 表示方法什么状态下返回，必须是以下常量：
+|常量|描述|
+|:-|:-|
+|FIRST_COMPLETED|方法在任何未来对象被调用或者完成时返回|
+|FIRST_EXCEPTION|方法在任何未来对象触发异常完成时返回，如果没有异常相当于ALL_COMPLETED|
+|ALL_COMPLETED|方法在所有未来对象完成或者取消时返回|
+
+`concurrent.futures.as_completed(fs, timeout=None)`
+
 ## 网络和进程间通讯
 ### 异步IO
 `asyncio`是一个使用`async/await`实现并发代码的库。`asyncio`是许多python实现的异步框架的基础，如高性能网络、web服务、数据库连接库、分派任务队列。`asyncio`常用于IO密集型和高层次结构化网络代码。
@@ -1026,7 +1116,7 @@ Wait for the aw awaitable to complete with a timeout.
 Run awaitable objects in the aws iterable concurrently and block until the condition specified by return_when.
 The aws iterable must not be empty.
 
-Returns two sets of Tasks/Futures: (done, pending).
+Returns two sets of Futures: (done, pending).
 Usage:
 ```python
 done, pending = await asyncio.wait(aws)
@@ -1035,7 +1125,7 @@ return_when indicates when this function should return. It must be one of the fo
 |常量|描述|
 |:-|:-|
 |FIRST_COMPLETED|函数在任何`future`完成或者被取消的时候返回|
-|FIRST_EXCEPTION|函数在任何`future`完成引起异常时返回，如果没有`future`引起错误，相当于ALL_COMPLETED|
+|FIRST_EXCEPTION|函数在任何`future`完成引起异常时返回，如果没有`future`引起错误，相当于 ALL_COMPLETED|
 |ALL_COMPLETED|函数在所有`future`完成或被取消时返回|
 
 Returns two sets of Tasks/Futures: (done, pending).
@@ -1190,7 +1280,7 @@ Special value that can be used as the stdin, stdout or stderr argument to proces
 that the special file os.devnull will be used for the corresponding subprocess stream
 
 #### 队列(Queues)
-asyncio queues are designed to be similar to classes of the queue module. Although asyncio queues are not threadsafe, they are designed to be used specifically in async/await code.
+asyncio queues are designed to be similar to classes of the queue module. Although asyncio queues are not thread safe, they are designed to be used specifically in async/await code.
 Note that methods of asyncio queues don’t have a timeout parameter; use asyncio.wait_for() function to do
 queue operations with a timeout.
 - class asyncio.Queue(maxsize=0)
