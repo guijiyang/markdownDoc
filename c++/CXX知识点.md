@@ -26,6 +26,28 @@ output: pdf_document
       - [模板特化](#模板特化)
         - [函数模板特化](#函数模板特化)
         - [类模板特化](#类模板特化)
+      - [SFINAE（替换失败不是一个错误）](#sfinae替换失败不是一个错误)
+        - [解释](#解释)
+        - [SFINAE类型](#sfinae类型)
+        - [表达式SFINAE](#表达式sfinae)
+        - [SFINAE 用于部分特化](#sfinae-用于部分特化)
+        - [库支持](#库支持)
+        - [SFINAE的替换](#sfinae的替换)
+        - [实例](#实例)
+    - [约束和概念（constrain and concept）](#约束和概念constrain-and-concept)
+      - [Concepts](#concepts)
+      - [constraints](#constraints)
+        - [Conjunctions](#conjunctions)
+        - [Disjunctions](#disjunctions)
+        - [Atomic constraints](#atomic-constraints)
+      - [constraints 规范化](#constraints-规范化)
+      - [需求从句（requires clauses）](#需求从句requires-clauses)
+      - [需求表达式(requires expressions)](#需求表达式requires-expressions)
+        - [简单需求](#简单需求)
+        - [类型需求](#类型需求)
+        - [复合需求](#复合需求)
+        - [嵌套需求](#嵌套需求)
+      - [Partial ordering of constraint](#partial-ordering-of-constraint)
     - [C++ 类中使用dllimport和dllexport](#c-类中使用dllimport和dllexport)
     - [容器类](#容器类)
       - [顺序容器](#顺序容器)
@@ -61,8 +83,10 @@ output: pdf_document
       - [移动语义](#移动语义)
       - [std::move](#stdmove)
     - [常量表达式 constexpr](#常量表达式-constexpr)
+    - [consteval](#consteval)
     - [std::declval](#stddeclval)
     - [decltype 说明符](#decltype-说明符)
+    - [结构化绑定声明(c++17)](#结构化绑定声明c17)
     - [多线程](#多线程)
       - [互斥Mutex](#互斥mutex)
       - [互斥对象管理类模板--锁Lock](#互斥对象管理类模板-锁lock)
@@ -70,6 +94,13 @@ output: pdf_document
       - [条件变量](#条件变量)
       - [std::atomic](#stdatomic)
       - [std::future](#stdfuture)
+    - [协程(c++20)](#协程c20)
+      - [限制](#限制)
+      - [执行](#执行)
+      - [堆分配](#堆分配)
+      - [承诺类型（Promise）](#承诺类型promise)
+      - [co_await](#co_await)
+      - [co_yield](#co_yield)
     - [元编程(meta programming)](#元编程meta-programming)
       - [type traits（类型特性）](#type-traits类型特性)
       - [std::constexpr](#stdconstexpr)
@@ -210,6 +241,17 @@ $8 = (void *) 0x55555556aeb0
 ```
 可以看到实例对象起始就存放着vptr指针，值为 0x0000555555557cf0，该值是虚函数表的起始地址.取出该地址存放的值，也是一个地址 0x00005555555556ac 。该地址就是 `Derived::fun1()`函数的地址。同理取虚函数表中的下一个地址，可以发现指向的就是`Derived::fun2()`。
 ### 模板
+模板是c++实体，定义为以下之一：
+- 类族（类模板），也可以是嵌套类；
+- 函数族（函数模板），也可以是成员函数；
+- 类型别名族（别名模板）（c++11起）；
+- 变量族（变量模板）（c++14起）；
+- 一个概念(concept)（约束和概念）（c++20起）。
+模板参数至少有一个，参数分为三种类型：类型模板参数，非类型模板参数和模板模板参数。
+当提供了模板实参时，或当函数和类(c++17起)模板的模板实参被推导出时，它们替换模板形参以获取模板的特化（specialization），即一个特定类型或一个特定函数左值。特化也可以显示提供：对类、变量和函数模板允许全特化，只允许对类模板和变量模板部分特化（偏特化）。
+在要求完整对象类型的语境中引用某个类模板特化时，或在要求函数定义存在的语境中引用某个函数模板特化时，除非模板已经被显示特化或显示实例化，否则模板即被实例化（instantiate）(它的代码被实际编译)。类模板实例化不会是实例化成员函数，除非被用到。链接时，不同编译单元生成的同一个实例化会融合起来。
+隐式实例化被絮在模板的定义可见是进行，这就是为什么所有的模板库通常将模板定义在头文件中（大多数boost库只有头文件）。
+
 #### 模板实例化和特化
 
 模板的实例化指函数模板(类模板)生成模板函数(模板类)的过程.对于函数模板而言,模板实例化之后,会生成一个真正的函数.而类模板经过实例化之后,只是完成了类的定义,模板类的成员函数需要到调用时才会被初始化.
@@ -276,14 +318,14 @@ template return_type func<T>(argument_list)
 template void func<int>(const int&);
 ```
 
-类模板显示实例化如下:
+对于类模板而言，就算不使用实例化类模板，也可以显示实例化模板如下:
 
 ```c++
 template class class_name<T>;
 //i.e
 template class class_name<int>;
 ```
-
+类模板的显示实例化通常用于动态库类模板，因为类模板在库中默认不被展开，如果不在库中显示实例化，库中将不存在该类的导出函数，依赖该库的下游在使用到类模板实例化对象时会出现链接错误。
 #### 函数模板调用方式
 
 在发生函数模板调用时,不指定参数类型而经过参数推演,称之为函数模板的隐式模板实参调用(隐式调用):
@@ -491,7 +533,734 @@ public:
 };
 ```
 
+#### SFINAE（替换失败不是一个错误）
+这个规则应用于重载解析函数模板：当显示特化或推断类型来替换模板参数失败时，特化参数从重载集合中丢弃以避免造成编译错误。
+这个特性用于模板元编程。
+##### 解释
+函数模板形式参数有两次替换过程（被模板实参替换）：
+- 在模板实参推断前显式特化的模板实参被替换；
+- 在模板实参推断后，推断的实参和默认的实参被替换。
+替换发生在：
+- 所有用于函数类型的类型（包含返回类型和所有参数类型）
+- 所有用于模板形参声明的类型
+- 所有用于函数类型的表达式（c++11起）
+- 所有用于模板参数声明的表达式（c++11起）
+- 所有显示特化的表达式（c++20起）
+替换失败就是在写入替换实参时，任何上述类型或表达式出现ill-formed。
+只有在函数类型或模板形参类型或显示特化（c++20起）的立即上下文的类型和表达式出现失败时才是SFINAE错误。如果在替换类型、表达式的评估中出现副作用，比如实例化一些模板的特化，生成隐式定义的成员函数等，这些副作用的错误会被视为硬错误。一个lambda表达式不会被视为立即上下文的一部分（c++20起）。
+替换过程按照词汇顺序进行，在遇到错误时停止。
+如果多个声明使用不同的词汇顺序（如一个函数模板声明伴随一个后缀返回类型，将在参数之后替换，并使用将在参数之前替换的普通返回类型重新声明），这可能会导致模板实例化出现不同的顺序或不完全，然后程序ill-formed（c++11起）。
+```c++
+template<typename A>
+struct B { using type = typename A::type; };
+ 
+template<
+    class T,
+    class U = typename T::type,    // SFINAE failure if T has no member type
+    class V = typename B<T>::type> // hard error if T has no member type
+                                   // (guaranteed to not occur via CWG 1227 because
+                                   // substitution into the default template argument
+                                   // of U would fail first)
+void foo (int);
+ 
+template<class T>
+typename T::type h(typename B<T>::type);
+ 
+template<class T>
+auto h(typename B<T>::type) -> typename T::type; // redeclaration
+ 
+template<class T>
+void h(...) {}
+ 
+using R = decltype(h<int>(0));     // ill-formed, no diagnostic required
+```
+##### SFINAE类型
+以下类型错误被视为SFINAE错误：
+- 尝试实例化包含多个不同长度的包的包展开；
+- 尝试创建一个void数组，引用数组，函数数组，尺寸为负的数组，非整型数组，或零尺寸数组：
+```c++
+template<int I>
+void div(char(*)[I%2==0]==0)
+{
 
+}
+
+template<int I>
+void div(char(*)[I%2==1]==0)
+{
+
+}
+```
+- 尝试使用左侧范围解析运算符::的类型，且不是一个类或枚举。
+```c++
+template<class T>
+int f(typename T::B*);
+
+template<class T>
+int f(T);
+
+int i=f<int>(0); //使用第二个overload
+```
+- 尝试使用类型的成员，在
+- - 类型不包含指定的成员；
+- - 指定的成员不是当前需要的类型；
+- - 指定的成员不是当前需要的模板；
+- - 只当的成员不是当前需要的non-type；
+```c++
+template<int I>
+struct X {};
+ 
+template<template<class T> class>
+struct Z {};
+ 
+template<class T>
+void f(typename T::Y*) {}
+ 
+template<class T>
+void g(X<T::N>*) {}
+ 
+template<class T>
+void h(Z<T::template TT>*) {}
+ 
+struct A {};
+struct B { int Y; };
+struct C { typedef int N; };
+struct D { typedef int TT; };
+struct B1 { typedef int Y; };
+struct C1 { static const int N = 0; };
+struct D1
+{ 
+    template<typename T>
+    struct TT {}; 
+};
+ 
+int main()
+{
+    // Deduction fails in each of these cases:
+    f<A>(0); // A does not contain a member Y
+    f<B>(0); // The Y member of B is not a type
+    g<C>(0); // The N member of C is not a non-type
+    h<D>(0); // The TT member of D is not a template
+ 
+    // Deduction succeeds in each of these cases:
+    f<B1>(0); 
+    g<C1>(0); 
+    h<D1>(0);
+}
+// todo: needs to demonstrate overload resolution, not just failure
+```
+- 尝试创建一个指向引用的指针；
+- 尝试创建一个void引用；
+- 尝试创建T成员的指针，这里T不是类类型：
+```c++
+template<typename T>
+class is_class
+{
+    typedef char yes[1];
+    typedef char no[2];
+ 
+    template<typename C>
+    static yes& test(int C::*); // selected if C is a class type
+ 
+    template<typename C>
+    static no& test(...);       // selected otherwise
+public:
+    static bool const value = sizeof(test<T>(0)) == sizeof(yes);
+};
+```
+- 尝试将无效类型赋值给非类型模板形参：
+```c++
+template<class T, T>
+struct S {};
+ 
+template<class T>
+int f(S<T, T()>*);
+ 
+struct X {};
+int i0 = f<X>(0);
+// todo: needs to demonstrate overload resolution, not just failure
+```
+- 尝试执行无效转换于：
+- - 模板实际参数表达式
+- - 用于函数声明的表达式。
+```c++
+template<class T, T*>int f(int);
+int i2 = f<int,1>(0); //不能将conv 1 转换成int*
+// todo: needs to demonstrate overload resolution, not just failure
+```
+- 尝试创建一个函数类型包含void类型的实参；
+- 尝试创建一个函数类型返回一个数组类型或者函数类型。
+
+##### 表达式SFINAE
+以下几种表达式错误是SFINAE错误：
+- ill-formed表达式用于模板实参类型；
+- ill-formed表达式用于函数类型：
+```c++
+struct X {};
+struct Y { Y(X){} }; // X is convertible to Y
+ 
+template<class T>
+auto f(T t1, T t2) -> decltype(t1 + t2); // overload #1
+ 
+X f(Y, Y);                               // overload #2
+ 
+X x1, x2;
+X x3 = f(x1, x2); // deduction fails on #1 (expression x1 + x2 is ill-formed)
+                  // only #2 is in the overload set, and is called
+```
+##### SFINAE 用于部分特化
+在确定类或变量（C++14 起）模板的特别化是由某些部分特化还是原始模板生成时，也会发生推导和替换。 在这种确定过程中，编译器不会将替换失败视为硬错误，而是忽略相应的部分特化声明，就像在涉及函数模板的重载决议中一样。
+```c++
+// primary template handles non-referenceable types:
+template<class T, class = void>
+struct reference_traits
+{
+    using add_lref = T;
+    using add_rref = T;
+};
+ 
+// specialization recognizes referenceable types:
+template<class T>
+struct reference_traits<T, std::void_t<T&>>
+{
+    using add_lref = T&;
+    using add_rref = T&&;
+};
+ 
+template<class T>
+using add_lvalue_reference_t = typename reference_traits<T>::add_lref;
+ 
+template<class T>
+using add_rvalue_reference_t = typename reference_traits<T>::add_rref;
+```
+
+Notes: currently partial specialization SFINAE is not formally supported by the standard (see also CWG issue 2054), however, LFTS requires it works since version 2 (see also detection idiom).
+
+##### 库支持
+标准库组件`std::enable_if`允许创建替换失败，为了在编译时期条件评估是否实现指定重载。
+另外，许多类型特性必须使用SFINAE实现在合适的编译器扩展不可用的情况下。
+（c++11起）
+标准库组件`std::void_t`是另一个元函数用于偏特化SFINAE应用。(c++17起)。
+
+##### SFINAE的替换
+在可用的情况下，更倾向于使用tag dispatch, if constexpr (since C++17), 和 concepts (since C++20)，而不是SFINAE。
+如果只需要在编译期间的错误，更倾向于使用`static_assert`(c++11起)。
+
+##### 实例
+```c++
+#include <iostream>
+ 
+// this overload is always in the set of overloads
+// ellipsis parameter has the lowest ranking for overload resolution
+void test(...)
+{
+    std::cout << "Catch-all overload called\n";
+}
+ 
+// this overload is added to the set of overloads if
+// C is a reference-to-class type and F is a pointer to member function of C
+template<class C, class F>
+auto test(C c, F f) -> decltype((void)(c.*f)(), void())
+{
+    std::cout << "Reference overload called\n";
+}
+ 
+// this overload is added to the set of overloads if
+// C is a pointer-to-class type and F is a pointer to member function of C
+template<class C, class F>
+auto test(C c, F f) -> decltype((void)((c->*f)()), void())
+{
+    std::cout << "Pointer overload called\n";
+}
+ 
+struct X { void f() {} };
+ 
+int main()
+{
+    X x;
+    test(x, &X::f);
+    test(&x, &X::f);
+    test(42, 1337);
+}
+```
+输出：
+```
+Reference overload called
+Pointer overload called
+Catch-all overload called
+```
+
+### 约束和概念（constrain and concept）
+
+类模板，函数模板和无模板函数（通常是类模板成员函数）可能会需要约束条件，指定模板实参的需求，用于选择最合适的函数重载和模板特殊化。
+这种需求命名的集合称之为概念。每个概念都是一个谓词，在编译时进行评估，并成为模板接口的一部分，用作约束：
+
+```c++
+#include <string>
+#include <cstddef>
+#include <concepts>
+ 
+// Declaration of the concept "Hashable", which is satisfied by any type 'T'
+// such that for values 'a' of type 'T', the expression std::hash<T>{}(a)
+// compiles and its result is convertible to std::size_t
+template<typename T>
+concept Hashable = requires(T a)
+{
+    { std::hash<T>{}(a) } -> std::convertible_to<std::size_t>;
+};
+ 
+struct meow {};
+ 
+// Constrained C++20 function template:
+template<Hashable T>
+void f(T) {}
+//
+// Alternative ways to apply the same constraint:
+// template<typename T>
+//     requires Hashable<T>
+// void f(T) {}
+//
+// template<typename T>
+// void f(T) requires Hashable<T> {}
+ 
+int main()
+{
+    using std::operator""s;
+ 
+    f("abc"s);    // OK, std::string satisfies Hashable
+    // f(meow{}); // Error: meow does not satisfy Hashable
+}
+```
+在编译时，在模板实例化过程的早期检测到违反约束，这将触发易于理解的错误消息：
+
+```c++
+std::list<int> l = {3, -1, 10};
+std::sort(l.begin(), l.end()); 
+// Typical compiler diagnostic without concepts:
+// invalid operands to binary expression ('std::_List_iterator<int>' and
+// 'std::_List_iterator<int>')
+//                           std::__lg(__last - __first) * 2);
+//                                     ~~~~~~ ^ ~~~~~~~
+// ... 50 lines of output ...
+//
+// Typical compiler diagnostic with concepts:
+// error: cannot call std::sort with std::_List_iterator<int>
+// note:  concept RandomAccessIterator<std::_List_iterator<int>> was not satisfied
+```
+
+概念的目的是对语义类别（Number、Range、RegularFunction）而不是句法限制（HasPlus、Array）进行建模，指定有意义的语义的能力是真正概念的定义特征，而不是句法约束。
+
+#### Concepts
+概念是一组命名的需求。 概念的定义必须出现在命名空间范围内。
+概念的定义具有以下形式：
+```shell
+template < template-parameter-list >
+concept concept-name = constraint-expression;
+```
+```c++
+// concept
+template<class T, class U>
+concept Derived = std::is_base_of<U, T>::value;
+```
+概念不能递归地引用自己，也不能被约束：
+```c++
+template<typename T>
+concept V = V<T*>; // error: recursive concept
+ 
+template<class T>
+concept C1 = true;
+template<C1 T>
+concept Error1 = true; // Error: C1 T attempts to constrain a concept definition
+template<class T> requires C1<T>
+concept Error2 = true; // Error: the requires-clause attempts to constrain a concept
+```
+显示实例化、显式特例化、偏特化概念是不允许的（这意味着约束的原始定义不能被改变）。
+概念可以以一个标识表达式命名，如果满足约束表达式，标识表达式为正，否则为假。
+概念也可以命名为类型约束，作为以下内容的一部分：
+- 类型模板参数声明；
+- 占位符类型说明符；
+- 复合需求。
+在类型约束中，概念采用的模板实参比其形参列表要求的少，因为上下文推导的类型被隐式用作概念的第一个实参
+```c++
+template<class T, class U>
+concept Derived = std::is_base_of<U, T>::value;
+ 
+template<Derived<Base> T>
+void f(T); // T is constrained by Derived<T, Base>
+```
+#### constraints
+约束是一系列逻辑操作和操作数，用于指定对模板参数的要求。 它们可以出现在需求表达式中（见下文），也可以直接作为概念体出现。
+约束有三种类型：
+- 连接conjunctions
+- 分离disjunctions
+- 原子约束atomic constraints
+
+与声明相关的约束是通过规范化其操作数按以下顺序的逻辑 AND 表达式来确定的：
+- 按出现顺序为使用受约束占位符类型声明的每个受约束类型模板参数或非类型模板参数引入的约束表达式；
+- 跟在模板形参列表后需求从句中的约束表达式；
+- 为一个简短函数模板声明中每个约束占位符类型的形参引入约束表达式；
+- 后缀需求从句的约束表达式。
+
+此顺序决定了在检查是否满足时实例化约束的顺序。
+受约束的声明只能使用相同的语法形式重新声明。 无需诊断:
+```c++
+template<Incrementable T>
+void f(T) requires Decrementable<T>;
+ 
+template<Incrementable T>
+void f(T) requires Decrementable<T>; // OK, redeclaration
+ 
+template<typename T>
+    requires Incrementable<T> && Decrementable<T>
+void f(T); // ill-formed, no diagnostic required
+ 
+// the following two declarations have different constraints:
+// the first declaration has Incrementable<T> && Decrementable<T>
+// the second declaration has Decrementable<T> && Incrementable<T>
+// Even though they are logically equivalent.
+ 
+template<Incrementable T> 
+void g(T) requires Decrementable<T>;
+ 
+template<Decrementable T> 
+void g(T) requires Incrementable<T>; // ill-formed, no diagnostic required
+```
+##### Conjunctions
+两个约束表达式使用&&运算符连接形成一个约束：
+```c++
+template<class T>
+concept Integral = std::is_integral<T>::value;
+template<class T>
+concept SignedIntegral = Integral<T> && std::is_signed<T>::value;
+template<class T>
+concept UnsignedIntegral = Integral<T> && !SignedIntegral<T>;
+```
+两个约束的连接只有在都满足的情况下才满足约束。连接的约束从左到右进行评估，不满足立即停止：这可以防止由于直接上下文之外的替换而导致的失败。
+```C++
+template<typename T>
+constexpr bool get_value() { return T::value; }
+ 
+template<typename T>
+    requires (sizeof(T) > 1 && get_value<T>())
+void f(T);   // #1
+ 
+void f(int); // #2
+ 
+void g()
+{
+    f('A'); // OK, calls #2. When checking the constraints of #1,
+            // 'sizeof(char) > 1' is not satisfied, so get_value<T>() is not checked
+}
+```
+##### Disjunctions
+通过使用 || 形成两个约束的分离。 约束表达式中的运算符。
+如果满足任一约束，则满足两个约束的分离。 析取从左到右评估并短路（如果满足左约束，则不尝试将模板参数替换为右约束）
+```c++
+template<class T = void>
+    requires EqualityComparable<T> || Same<T, void>
+struct equal_to;
+```
+##### Atomic constraints
+原子约束由表达式 E 和从 E 中出现的模板形参到涉及受约束实体的模板形参的模板参数的映射组成，称为其参数映射。
+原子约束是在约束规范化期间形成的。E 绝不是逻辑 AND 或逻辑 OR 表达式（它们分别形成连词和分离）。
+通过将参数映射和模板参数代入表达式 E 来检查原子约束的满足情况。如果替换导致无效的类型或表达式，则不满足约束。 否则，在任何左值到右值的转换之后，E 应该是一个 bool 类型的纯右值常量表达式，并且当且仅当它的计算结果为真时才满足约束。
+替换后的 E 类型必须完全是 bool。 不允许转换：
+```c++
+template<typename T>
+struct S
+{
+    constexpr operator bool() const { return true; }
+};
+ 
+template<typename T>
+    requires (S<T>{})
+void f(T);   // #1
+ 
+void f(int); // #2
+ 
+void g()
+{
+    f(0); // error: S<int>{} does not have type bool when checking #1,
+          // even though #2 is a better match
+}
+```
+如果两个原子约束由源级别的相同表达式形成并且它们的参数映射是等价的，则它们被认为是相同的。
+```c++
+template<class T>
+constexpr bool is_meowable = true;
+ 
+template<class T>
+constexpr bool is_cat = true;
+ 
+template<class T>
+concept Meowable = is_meowable<T>;
+ 
+template<class T>
+concept BadMeowableCat = is_meowable<T> && is_cat<T>;
+ 
+template<class T>
+concept GoodMeowableCat = Meowable<T> && is_cat<T>;
+ 
+template<Meowable T>
+void f1(T); // #1
+ 
+template<BadMeowableCat T>
+void f1(T); // #2
+ 
+template<Meowable T>
+void f2(T); // #3
+ 
+template<GoodMeowableCat T>
+void f2(T); // #4
+ 
+void g()
+{
+    f1(0); // error, ambiguous:
+           // the is_meowable<T> in Meowable and BadMeowableCat forms distinct atomic
+           // constraints that are not identical (and so do not subsume each other)
+ 
+    f2(0); // OK, calls #4, more constrained than #3
+           // GoodMeowableCat got its is_meowable<T> from Meowable
+}
+```
+#### constraints 规范化
+约束规范化是将约束表达式转换为一系列原子约束连接和分离的过程。 表达式的范式定义如下：
+- 表达式(E)的规范形式是E的规范形式；
+- 表达式E1&&E2的规范形式是E1和E2规范形式的连接；
+- 表达式E1||E2的规范形式是E1和E2规范形式的分离；
+- 表达式 C<A1, A2, ... , AN> 的范式，其中 C 命名一个概念，是 C 的约束表达式的范式，在将 A1, A2, ... , AN 替换为 C 各自的 C 的每个原子约束的参数映射中的模板参数。如果对参数映射的任何此类替换导致无效的类型或表达式，则程序格式错误，不需要诊断。
+```c++
+template<typename T>
+concept A = T::value || true;
+ 
+template<typename U>
+concept B = A<U*>; // OK: normalized to the disjunction of 
+                   // - T::value (with mapping T -> U*) and
+                   // - true (with an empty mapping).
+                   // No invalid type in mapping even though
+                   // T::value is ill-formed for all pointer types
+ 
+template<typename V>
+concept C = B<V&>; // Normalizes to the disjunction of
+                   // - T::value (with mapping T-> V&*) and
+                   // - true (with an empty mapping).
+                   // Invalid type V&* formed in mapping => ill-formed NDR
+```
+- 任何其他表达式 E 的范式是原子约束，其表达式为 E，其参数映射为恒等映射。 这包括所有折叠表达式，甚至那些折叠在 && 或 || 运算符上的表达式。
+
+用户重载的&&和||不会对约束规范化产生影响。
+#### 需求从句（requires clauses）
+关键词`requires`是用于导入需求从句，用于指定模板参数或函数声明的约束。
+```c++
+template<typename T>
+void f(T&&) requires Eq<T>; // can appear as the last element of a function declarator
+ 
+template<typename T> requires Addable<T> // or right after a template parameter list
+T add(T a, T b) { return a + b; }
+```
+在这种情况下，关键字 requires 必须后跟一些常量表达式（因此可以写为 requires true ），但其意图是使用命名概念（如上例所示）或命名概念的连接/分离或 requires 需求表达式。
+表达式必须是以下的形式之一：
+- 主要表达式，例如 Swappable<T>、std::is_integral<T>::value、(std::is_object_v<Args> && ...) 或任何带括号的表达式；
+- 使用&&连接主要表达式序列；
+- 使用||分离主要表达式序列。
+```c++
+template<class T>
+constexpr bool is_meowable = true;
+ 
+template<class T>
+constexpr bool is_purrable() { return true; }
+ 
+template<class T>
+void f(T) requires is_meowable<T>; // OK
+ 
+template<class T>
+void g(T) requires is_purrable<T>(); // error, is_purrable<T>() is not a primary expression
+ 
+template<class T>
+void h(T) requires (is_purrable<T>()); // OK
+```
+#### 需求表达式(requires expressions)
+关键词`requires`也用于开始需求表达式，这是一个纯右值bool表达式用于描述对模板参数的限制。如果满足约束，表达式为正，否则为假：
+```c++
+template<typename T>
+concept Addable = requires (T x) { x + x; }; // requires-expression
+ 
+template<typename T> requires Addable<T> // requires-clause, not requires-expression
+T add(T a, T b) { return a + b; }
+ 
+template<typename T>
+    requires requires (T x) { x + x; } // ad-hoc constraint, note keyword used twice
+T add(T a, T b) { return a + b; }
+```
+需求表达式的语法如下：
+```c++
+requires {requirements-seq}    
+requires (parameter-list(optional)){requirements-seq}
+```
+requirements-seq必须是以下之一：
+- 简单需求；
+- 类型需求；
+- 复合需求；
+- 嵌套需求。
+
+需求可以引用范围内的模板参数，参数列表中引入的本地参数，以及从封闭上下文可见的任何其他声明。
+将模板参数替换为模板实体声明中使用的 requires 表达式可能会导致在其需求中形成无效类型或表达式，或违反这些需求的语义约束。 在这种情况下， requires 表达式的计算结果为 false 并且不会导致程序格式错误。 替换和语义约束检查按词汇顺序进行，并在遇到确定 requires 表达式结果的条件时停止。 如果替换（如果有）和语义约束检查成功，则 requires-expression 的计算结果为 true。
+如果在每个可能的模板参数的 requires 表达式中都发生替换失败，则程序格式错误，不需要诊断：
+```c++
+template<class T>
+concept C = requires
+{
+    new int[-(int)sizeof(T)]; // invalid for every T: ill-formed, no diagnostic required
+};
+```
+如果 requires-expression 在其需求中包含无效的类型或表达式，并且它没有出现在模板化实体的声明中，则该程序是格式错误的。
+##### 简单需求
+一个简单的需求是一个不以关键字 `requires` 开头的任意表达式语句。 它断言表达式是有效的。 表达式是未计算的操作数； 仅检查语言正确性:
+```c++
+template<typename T>
+concept Addable = requires (T a, T b)
+{
+    a + b; // "the expression a+b is a valid expression that will compile"
+};
+ 
+template<class T, class U = T>
+concept Swappable = requires(T&& t, U&& u)
+{
+    swap(std::forward<T>(t), std::forward<U>(u));
+    swap(std::forward<U>(u), std::forward<T>(t));
+};
+```
+以关键字 requires 开头的需求总是被解释为嵌套需求。 因此，一个简单的需求不能以一个没有括号的需求表达式开始。
+##### 类型需求
+类型要求是关键字 typename 后跟类型名称，可选限定。 要求是命名类型是有效的：这可以用来验证某个命名嵌套类型是否存在，或者类模板特化命名了一个类型，或者别名模板特化命名了一个类型。 命名类模板特化的类型要求不要求类型是完整的。
+```c++
+template<typename T>
+using Ref = T&;
+ 
+template<typename T>
+concept C = requires
+{
+    typename T::inner; // required nested member name
+    typename S<T>;     // required class template specialization
+    typename Ref<T>;   // required alias template substitution
+};
+ 
+template<class T, class U>
+using CommonType = std::common_type_t<T, U>;
+ 
+template<class T, class U>
+concept Common = requires (T&& t, U&& u)
+{
+    typename CommonType<T, U>; // CommonType<T, U> is valid and names a type
+    { CommonType<T, U>{std::forward<T>(t)} }; 
+    { CommonType<T, U>{std::forward<U>(u)} }; 
+};
+```
+##### 复合需求
+复合需求的形式如下：
+```c++
+{expression} noexcept(optional) return-type-requirement(optional)
+return-type-requirement ->type-constraint
+```
+并断言命名表达式的属性。 替换和语义约束检查按以下顺序进行:
+- 1) 模板实参替换到表达式；
+- 2) 如果使用了`noexcept`，需要保证表达式不抛出异常；
+- 3) 如果出现返回类型需求，则：
+- - a) 模板实参替换到返回类型；
+- - b) decltype((expression))必须满足类型约束的约束。否则封闭的需求表达式是false。
+```c++
+template<typename T>
+concept C2 = requires(T x)
+{
+    // the expression *x must be valid
+    // AND the type T::inner must be valid
+    // AND the result of *x must be convertible to T::inner
+    {*x} -> std::convertible_to<typename T::inner>;
+ 
+    // the expression x + 1 must be valid
+    // AND std::same_as<decltype((x + 1)), int> must be satisfied
+    // i.e., (x + 1) must be a prvalue of type int
+    {x + 1} -> std::same_as<int>;
+ 
+    // the expression x * 1 must be valid
+    // AND its result must be convertible to T
+    {x * 1} -> std::convertible_to<T>;
+};
+```
+##### 嵌套需求
+一个嵌套需求有如下形式：
+```c++
+requires constraint-expression;
+```
+它可用于根据局部参数指定附加约束。 替换的模板参数（如果有）必须满足约束表达式。 将模板参数替换为嵌套需求会导致替换为约束表达式，仅在确定是否满足约束表达式所需的范围内。
+```c++
+template<class T>
+concept Semiregular = DefaultConstructible<T> &&
+    CopyConstructible<T> && Destructible<T> && CopyAssignable<T> &&
+requires(T a, size_t n)
+{  
+    requires Same<T*, decltype(&a)>; // nested: "Same<...> evaluates to true"
+    { a.~T() } noexcept; // compound: "a.~T()" is a valid expression that doesn't throw
+    requires Same<T*, decltype(new T)>; // nested: "Same<...> evaluates to true"
+    requires Same<T*, decltype(new T[n])>; // nested
+    { delete new T }; // compound
+    { delete new T[n] }; // compound
+};
+```
+
+#### Partial ordering of constraint
+在进行任何进一步分析之前，通过替换每个命名概念的主体和每个 requires 表达式来规范化约束，直到剩下的是原子约束上的连接和分离序列。
+如果可以证明 P 隐含 Q 直到 P 和 Q 中的原子约束的恒等式，则称约束 P 包含约束 Q。（类型和表达式不进行等价分析：N > 0 不包含 N >= 0 ）。
+具体来说，首先将 P 转换为分离范式，然后将 Q 转换为连接范式。 P 包含 Q 当且仅当：
+- P 的析取范式中的每个分离子句都包含 Q 的析取范式中的每个分离子句，其中
+- 一个分离子句包含一个连接子句当且仅当在分离子句中存在原子约束 U 并且在连接子句中存在原子约束 V 使得 U 包含 V；
+- 当且仅当它们使用上述规则相同时，原子约束 A 包含原子约束 B。
+
+包含关系定义了约束的偏序，用于确定：
+- 重载决议中非模板函数的最佳可行候选者
+- 重载集中非模板函数的地址
+- 模板模板参数的最佳匹配
+- 类模板特化的部分排序
+- 函数模板的部分排序
+如果声明 D1 和 D2 受到约束，并且 D1 的关联约束包含 D2 的关联约束（或者如果 D2 不受约束），则称 D1 至少与 D2 一样受约束。 如果 D1 至少与 D2 一样受约束，并且 D2 至少不像 D1 那样受约束，则 D1 比 D2 更受约束。
+
+```c++
+template<typename T>
+concept Decrementable = requires(T t) { --t; };
+template<typename T>
+concept RevIterator = Decrementable<T> && requires(T t) { *t; };
+ 
+// RevIterator subsumes Decrementable, but not the other way around
+ 
+template<Decrementable T>
+void f(T); // #1
+ 
+template<RevIterator T>
+void f(T); // #2, more constrained than #1
+ 
+f(0);       // int only satisfies Decrementable, selects #1
+f((int*)0); // int* satisfies both constraints, selects #2 as more constrained
+ 
+template<class T>
+void g(T); // #3 (unconstrained)
+ 
+template<Decrementable T>
+void g(T); // #4
+ 
+g(true); // bool does not satisfy Decrementable, selects #3
+g(0);    // int satisfies Decrementable, selects #4 because it is more constrained
+ 
+template<typename T>
+concept RevIterator2 = requires(T t) { --t; *t; };
+ 
+template<Decrementable T>
+void h(T); // #5
+ 
+template<RevIterator2 T>
+void h(T); // #6
+ 
+h((int*)0); //ambiguous
+```
 ### C++ 类中使用dllimport和dllexport
 
 在Windows平台下，编译动态库时：
@@ -1256,8 +2025,8 @@ C++11 中：
 - 拥有标识符且可被移动的表达式被称作亡值 (xvalue)表达式；
 - 不拥标识符份且可被移动的表达式被称作纯右值 (prvalue)表达式；
 - 不拥标识符份且不可被移动的表达式无法使用。
-- 拥有标识符的表达式被称作“泛左值 (glvalue) 表达式”。左值和亡值都是泛左值表达式。
-- 可被移动的表达式被称作“右值 (rvalue) 表达式”。纯右值和亡值都是右值表达式。
+- 拥有标识符的表达式被称作“泛左值 (glvalue) 表达式”。左值和将亡值都是泛左值表达式。
+- 可被移动的表达式被称作“右值 (rvalue) 表达式”。纯右值和将亡值都是右值表达式。
 
 C++17 中，某些场合强制要求进行复制消除，而这要求将纯右值表达式从被它们所初始化的临时对象中分离出来，这就是我们现有的系统。要注意，**与 C++11 的方案相比，纯右值已不再是可被移动**。
 
@@ -1275,6 +2044,8 @@ T && ref = { arg1, arg2, ... };
 T && ref ( target );
 T && ref { arg1, arg2, ... };
 ```
+左值引用变量绑定左值类型
+右值引用变量绑定纯右值或将亡值
 
 ##### 右值引用对纯右值的生命周期延长
 为了方便对临时对象的使用，C++ 对临时对象有特殊的生命周期延长规则。这条规则是：如果一个 `prvalue` 被绑定到一个右值引用上，它的生命周期则会延长到跟这个引用变量一样长。**注意，const 左值引用亦能延长临时对象生存期，但无法修改引用对象**
@@ -1695,6 +2466,71 @@ int main()
     constN<countlower("Hello, world!")> out2; // 隐式转换到 conststr
 }
 ```
+
+### consteval
+用于表明函数是一个立即求值的编译期间常量。
+```c++
+consteval int sqr(int n) {
+  return n*n;
+}
+constexpr int r = sqr(100); // OK
+ 
+int x = 100;
+int r2 = sqr(x);            // Error: Call does not produce a constant
+ 
+consteval int sqrsqr(int n) {
+  return sqr(sqr(n));       // Not a constant expression at this point, but OK
+}
+ 
+constexpr int dblsqr(int n) {
+  return 2*sqr(n);          // Error: Enclosing function is not consteval
+                            // and sqr(n) is not a constant
+}
+```
+```c++
+consteval int f() { return 42; }
+consteval auto g() { return &f; }
+consteval int h(int (*p)() = g()) { return p(); }
+constexpr int r = h();  // OK
+// constexpr auto e = g(); // ill-formed: a pointer to an immediate function is
+                        // not a permitted result of a constant expression
+constexpr auto len=  (*g())(); // OK
+
+int main(int argc, char const *argv[])
+{
+    /* code */
+    int s[len];
+    return 0;
+}
+```
+```c++
+#include <iostream>
+ 
+// This function might be evaluated at compile-time, if the input
+// is known at compile-time. Otherwise, it is executed at run-time.
+constexpr unsigned factorial(unsigned n) {
+    return n < 2 ? 1 : n * factorial(n - 1);
+}
+ 
+// With consteval we have a guarantee that the function will be evaluated at compile-time.
+consteval unsigned combination(unsigned m, unsigned n) {
+    return factorial(n) / factorial(m) / factorial(n - m);
+}
+ 
+static_assert(factorial(6) == 720);
+static_assert(combination(4,8) == 70);
+ 
+int main(int argc, const char*[]) {
+ 
+    constexpr unsigned x{factorial(4)};
+    std::cout << x << '\n';
+ 
+    [[maybe_unused]]
+    unsigned y = factorial(argc); // OK
+//  unsigned z = combination(argc, 7); // error: 'argc' is not a constant expression
+}
+```
+输出：`24`
 ### std::declval
 
 获取非求值语境中的某个引用.
@@ -1721,11 +2557,10 @@ decltype (entity)
 decltype (expression)
 ```
 
-- 如果参数是某个无括号id表达式或某个无括号类成员访问表达式,则 decltype 产生以此表达式命名的实体的类型.若无这种实体,或该实参指名某个重载函数,则程序非良构.
-    - 如果参数是指名某个结构化绑定的无括号的id表达式,则 decltype 产生引用的类型.(c++17 起);
-
-    - 如果参数是指名某个非类型模板参数的无括号id表达式,则 decltype 产生模板的参数类型.(c++20 起).
-- 若实参是其他类型为`T`的任何表达式,且:
+- 如果参数是某个无括号标识表达式或某个无括号类成员访问表达式,则 decltype 产生以此表达式命名的实体的类型.若无这种实体,或该实参指名某个重载函数,则程序非良构.
+- 如果参数是指名某个[结构化绑定](#结构化绑定)的无括号的id表达式,则 decltype 生成被引用的类型(结构化绑定声明的规范中描述).(c++17 起);
+- 如果参数是指名某个非类型模板参数的无括号id表达式,则 decltype 生成模板形参类型（模板形参是占位类型时经过必要的类型推断后）就算模板参数对象是const得到的类型也是non-const.(c++20 起).
+- 若参数是其他类型为`T`的任何表达式,且:
    a) 若值类型为将亡值,则 decltype 产生`T&&`;
    b) 若值类型为左值,则 decltpye 产生`T&`;
    c) 若值类型是纯右值,则 decltype 产生`T`.
@@ -1810,14 +2645,23 @@ int main()
               << "j = " << j << '\n';
 }
 ```
+
 输出：
+
 ```shell
 i and j are the same type? true
 i = 33, j = 66
 i = 4, j = 9
 ```
+
+### 结构化绑定声明(c++17)
+
+待完善
+
 ### 多线程
+
 #### 互斥Mutex
+
 互斥限制了多线程下对共享资源的同时访问，防止了数据竞速并使线程保证同步。
 |类名|作用|
 |:-:|:-|
@@ -2028,6 +2872,399 @@ int main()
 Exception from the thread: Example
 ```
 
+### 协程(c++20)
+
+协程是能暂停执行以在以后恢复的函数。协程是无栈的：它们通过返回到调用方暂停执行，并且恢复执行所需的数据与栈分离存储。这样就可以编写异步执行的顺序代码（例如不适用显式的回调来处理非阻塞IO），还支持作用于惰性计算的无限序列上的算法及其他用途。
+如果函数的定义进行了下列操作之一，那么它是协程：
+- 用 `co_await` 运算符暂停执行，直到恢复：
+```c++
+task<> tcp_echo_server()
+{
+    char data[1024];
+    while(true)
+    {
+        std::size_t n=co_await socket.async_read_some(buffer(data));
+        co_await async_write(socket, buffer(data,n));
+    }
+}
+```
+- 用关键词 `co_yield` 暂停执行并返回一个值：
+```c++
+generator<int> iota(int n=0)
+{
+    while(true)
+    {
+        co_yield n++;
+    }
+}
+```
+- 用关键词 `co_return` 完成执行并返回一个值：
+```c++
+lazy<int> f() {
+    co_return 7;
+}
+```
+每个协程必须具有能够满足一组要求的返回类型，标注于下。
+
+#### 限制
+
+协程不能使用变长实参，普通的 return 语句，或占位符返回类型（auto 或 Concept）。
+constexpr 函数、构造函数、析构函数及 main 函数 不能是协程。
+
+#### 执行
+
+每个协程均与下列对象关联：
+- 承诺(promise)对象，从协程内部操纵。协程通过此对象提交其结果或异常。
+- 协程句柄(coroutine handle)，从协程外部操纵。这是用于恢复协程执行或销毁协程帧的非拥有柄。
+- 协程状态(coroutine state)，它是一个包含以下各项的分配于堆（除非优化掉其分配）的内部对象：
+- - 承诺对象
+- - 各个形参（全部按值复制）
+- - 当前暂停点的某种表示，使得恢复时程序知晓要从何处继续，销毁时知晓有哪些局部变量在作用域内
+- - 生存期跨过当前暂停点的局部比那辆和临时量
+
+当协程开始执行时，它进行下列操作：
+- 用 `operator new` 分配协程状态对象
+- 将所有函数形参复制到协程状态中：按值传递的形参被移动或复制，按引用传递的参数保持为引用（因此，如果在被指代对象的生存期结束后恢复协程，它可能编程悬垂引用）
+```c++
+#include<coroutine>
+#include<iostream>
+
+struct promise;
+struct coroutine:std::coroutine_handle<promise>
+{
+    using promise_type=struct promise;
+};
+
+struct promise
+{
+    coroutine get_return_object()
+    {
+        return {coroutine::from_promise(*this)};
+    }
+    std::suspend_always initial_suspend() noexcept { return {};}
+    std::suspend_never final_suspend() noexcept { return {};}
+    void return_void() {}
+    void unhandled_exception() {}
+}；
+
+struct S {
+    int i;
+    coroutine f() {
+        std::cout<<i;
+        co_return;
+    }
+};
+
+void bad1() {
+    coroutine h=S{0}.f();
+    //S{0}被销毁
+    h.resume(); // 协程恢复并执行了 std::cout << i ，这释放后使用了 S::i
+    h.destory();
+}
+
+coroutine bad2() {
+    S s{0};
+    return s.f() // 返回的协程不能被恢复执行，否则会导致释放后使用
+}
+
+void bad3() {
+    coroutine h=[i=0]() ->coroutine { //一个 lambda ，同时也是个协程
+        std::cout<<i;
+        co_return;
+    }(); // 立即调用
+    // lambda被销毁
+    h.resume(); // 释放后使用了(anonymous lambda type)::i
+    h.destory();
+}
+
+void good() {
+    coroutine h=[](int i) -> coroutine { // i是一个协程形参
+        std::cout<<i;
+        co_return;
+    }(0);
+    // lambda 被销毁
+    h.resume(); //没有问题，i已经作为按值传递的参数被复制到协程帧中
+    h.destory();
+}
+```
+
+- 调用承诺对象的构造函数。如果承诺类型拥有接收所有协程形参的构造函数，那么以复制后的协程实参调用该构造函数。否则调用其默认构造函数。
+- 调用 `promise.get_return_object()` 并将结果保存在局部变量中。该调用的结果将在协程首次暂停时返回给调用方。至此并包含这个步骤，任何抛出的异常均传播回调用方，而非置于承诺中。
+- 调用 `promise.initial_suspend()`并 `co_await`其结果。典型的承诺类型要么（对于惰性启动的协程）返回`std::suspend_always`，要么（对于急切启动的协程）返回`std::suspend_never`。
+- 当`co_await promise.inital_suspend()`恢复时，开始协程体的执行。
+当协程抵达暂停点时：
+- 将先前获得的返回对象返回给调用方/恢复方，如果需要则先隐式转换到协程的返回类型。
+当协程抵达 `co_return`语句时，它进行下列操作：
+- 对下列情形调用 `promise.return_void()`
+- - `co_return`;
+- - `co_return expr`，其中expr具有void类型；
+- - 控制流抵达返回 `void` 的协程的结尾。此时如果承诺类型 `Promise`没有`Promise::return_void()`成员函数，那么则行为未定义。
+- 或对于 `co_return expr`调用 `promise.return_value(expr)`，其中`expr`具有非void类型
+- 以创建顺序的逆序销毁所有具有自动存储期的变量。
+- 调用 `promise.final_suspend()`并`co_await`其结果。
+如果协程因未捕捉的异常结束，那么它进行下列操作：
+- 捕捉异常并在`catch`块内调用 `promise.unhandled_exception()`
+- 调用 `promise.final_suspend()`并 `co_await`其结果(例如，以恢复某个继续或发布某个结果）。此时开始恢复协程是未定义行为。
+
+当经由 co_return 或未捕捉异常而终止协程导致协程状态被销毁，或经由其句柄而导致其被销毁时，它进行下列操作：
+- 调用承诺对象的析构函数。
+- 调用各个函数形参副本的析构函数。
+- 调用 operator delete 以释放协程状态所用的内存。
+- 转移执行回到调用方/恢复方。
+
+#### 堆分配
+协程状态由非数组 `operator new`在堆上分配。
+如果承诺类型定义了类级别的替代函数，那么会使用它，否则会使用全局的 `operator new`。
+如果承诺类型定义了接收额外形参的 `operator new`的布置形式，且他们所匹配的实参列表中的第一实参是要求的大小（std::size_t 类型），而其余则是各个协程函数实参，那么将这些实参传递给 operator new（这使得能对协程使用前导分配器约定）
+
+以下情况下，可以优化掉对 `operator new`的调用（即使使用了自定义分配器）：
+- 协程状态的生存期严格内嵌于调用方的生存期，且
+- 协程帧的大小在调用点已知
+此时协程状态嵌入调用方的栈帧（如果调用方是普通函数）或协程状态（如果调用方是协程）之中。
+如果分配失败，那么协程抛出 std::bad_alloc，除非承诺类型 Promise 类型定义了成员函数 Promise::get_return_object_on_allocation_failure()。如果定义了该成员函数，那么使用 operator new 的 nothrow 形式进行分配，而在分配失败时，协程会立即将从 Promise::get_return_object_on_allocation_failure() 获得的对象返回给调用方。
+
+#### 承诺类型（Promise）
+编译器用 `std::coroutine_traits` 从协程的返回类型确定承诺类型。
+正式而言，令 `R` 与 `Args...`分别代表协程的返回类型与参数类型列表，`ClassT`与cv限定分别代表协程所属的类与其cv限定，如果定义它为非静态成员函数，以如下方式确定它的承诺类型：
+- `std::coroutine_traits<R,Args...>::promise_type`，如果不定义协程为非静态成员函数。
+- `std::coroutine_traits<R, ClassT /*cv*/&, Args...>::promise_type`，如果定义协程为非右值引用限定的非静态成员函数；
+- `std::coroutine_traits<R, ClassT /*cv限定*/&&, Args...>::promise_type`，如果定义协程为右值引用限定的非静态成员函数。
+
+例如：
+
+如果定义协程为 `task<float> foo(std::string x, bool flag)`;，那么它的承诺类型是 `std::coroutine_traits<task<float>, std::string, bool>::promise_type`。
+如果定义协程为 `task<void> my_class::method1(int x) const`;，那么它的承诺类型是 `std::coroutine_traits<task<void>, const my_class&, int>::promise_type`。
+如果定义协程为 `task<void> my_class::method1(int x) &&`;，那么它的承诺类型是 `std::coroutine_traits<task<void>, my_class&&, int>::promise_type`。
+
+#### co_await
+一元运算符 `co_await` 暂停协程并将控制返回给调用方。它的操作数是一个表达式，其类型必须要么定义 `operator co_await`，要么能以当前协程的 `Promise::await_transform` 转换到这种类型。
+```
+co_await 表达式
+```
+首先，以下列方式将 表达式 转换成可等待体（awaitable）：
+- 如果 表达式 由初始暂停点、最终暂停点或 yield 表达式所产生，那么可等待体是 表达式 本身。
+- 否则，如果当前协程的承诺类型拥有成员函数 await_transform，那么可等待体是 promise.await_transform(表达式)。
+- 否则，可等待体是 表达式 本身。
+然后以下列方式获得等待器（awaiter）对象：
+- 如果针对 `operator co_await` 的重载决议给出单个最佳重载，那么等待器是该调用的结果（对于成员重载为 `awaitable.operator co_await()`;，对于非成员重载为 `operator co_await(static_cast<Awaitable&&>(awaitable))`;）
+- 否则，如果重载决议找不到 operator co_await，那么等待器是可等待体本身。
+- 否则，如果重载决议有歧义，那么程序非良构。
+如果上述表达式为纯右值，那么等待器对象是从它实例化的临时量。否则，如果上述表达式为泛左值，那么等待器对象是它所指代的对象。
+
+然后，调用 `awaiter.await_ready()` (这是当已知结果就绪或可以同步完成时，用以避免暂停开销的快捷方式)。如果它的结果按语境转换成bool为false，那么：
+暂停协程（以各局部变量和当前暂停点填充其协程状态）。
+调用 `awaiter.await_suspend(handle)`，其中handle时表示当前协程的协程句柄。这个函数内部可以通过这个句柄观察暂停的协程，而且此函数负责调度它以在某个执行器上恢复，或将其销毁（并返回false当作调度）
+- 如果 await_suspend 返回 void，那么立即将控制返回给当前协程的调用方/恢复方（此协程保持暂停），否则
+- 如果 await_suspend 返回 bool，那么：
+- - 值为 true 时将控制返回给当前协程的调用方/恢复方
+- - 值为 false 时恢复当前协程。
+- 如果 await_suspend 返回某个其他协程的协程句柄，那么（通过调用 handle.resume()）恢复该句柄（注意这可以连锁进行，并最终导致当前协程恢复）。
+- 如果 await_suspend 抛出异常，那么捕捉该异常，恢复协程，并立即重抛异常；
+
+最后，调用 awaiter.await_resume()，它的结果就是整个 co_await expr 表达式的结果。
+如果协程在 co_await 表达式中暂停而在后来恢复，那么恢复点处于紧接对 awaiter.await_resume() 的调用之前。
+注意，因为协程在进入 awaiter.await_suspend() 前已经完全暂停，所以该函数可以自由地在线程间转移协程柄而无需额外同步。例如，可以将它放入回调，将它调度成在异步 I/O 操作完成时在线程池上运行等。此时因为当前协程可能已被恢复，从而执行了等待器的析构函数，同时由于 await_suspend() 在当前线程上持续执行， await_suspend() 应该把 *this 当作已被销毁并且在柄被发布到其他线程后不再访问它。
+
+```c++
+#include <coroutine>
+#include <iostream>
+#include <stdexcept>
+#include <thread>
+ 
+auto switch_to_new_thread(std::jthread& out) {
+  struct awaitable {
+    std::jthread* p_out;
+    bool await_ready() { return false; }
+    void await_suspend(std::coroutine_handle<> h) {
+      std::jthread& out = *p_out;
+      if (out.joinable())
+        throw std::runtime_error("Output jthread parameter not empty");
+      out = std::jthread([h] { h.resume(); });
+      // Potential undefined behavior: accessing potentially destroyed *this
+      // std::cout << "New thread ID: " << p_out->get_id() << '\n';
+      std::cout << "New thread ID: " << out.get_id() << '\n'; // this is OK
+    }
+    void await_resume() {}
+  };
+  return awaitable{&out};
+}
+ 
+struct task{
+  struct promise_type {
+    task get_return_object() { return {}; }
+    std::suspend_never initial_suspend() { return {}; }
+    std::suspend_never final_suspend() noexcept { return {}; }
+    void return_void() {}
+    void unhandled_exception() {}
+  };
+};
+ 
+task resuming_on_new_thread(std::jthread& out) {
+  std::cout << "Coroutine started on thread: " << std::this_thread::get_id() << '\n';
+  co_await switch_to_new_thread(out);
+  // awaiter destroyed here
+  std::cout << "Coroutine resumed on thread: " << std::this_thread::get_id() << '\n';
+}
+ 
+int main() {
+  std::jthread out;
+  resuming_on_new_thread(out);
+}
+```
+可能的输出：
+```
+Coroutine started on thread: 14868
+New thread ID: 15200
+Coroutine resumed on thread: 15200
+```
+注意：等待器对象是协程状态的一部分（作为生存期跨过暂停点的临时量），并且在 co_await 表达式结束前销毁。可以用它维护某些异步 I/O API 所要求的每操作内状态，而无需用到额外的堆分配。
+标准库定义了两个平凡的可等待体：std::suspend_always 及 std::suspend_never。
+
+#### co_yield
+yield 表达式向调用方返回一个值并暂停当前协程：它是可恢复生成器函数的常用构建块
+```
+co_yield 表达式		
+co_yield 花括号初始化器列表		
+```
+它等价于
+```
+co_await promise.yield_value(表达式)
+```
+典型的生成器的 yield_value 会将其实参存储（复制/移动或仅存储其地址，因为实参的生存期跨过 co_await 内的暂停点）到生成器对象中并返回 std::suspend_always，将控制转移给调用方/恢复方。
+
+```c++
+#include<coroutine>
+#include<iostream>
+#include<exception>
+
+template<typename T>
+struct Generator {
+    // The class name 'Generator' is our choice and 
+   // it is not required for coroutine magic. 
+   // Compiler recognizes coroutine by the presence of 'co_yield' keyword.
+   // You can use name 'MyGenerator' (or any other name) instead
+   // as long as you include nested struct promise_type 
+   // with 'MyGenerator get_return_object()' method .
+   //(Note:You need to adjust class constructor/destructor names too when choosing to rename class)
+    struct promise_type;
+    using handle_type = std::coroutine_handle<promise_type>;
+
+    struct promise_type {
+        T value_;
+        std::exception_ptr exception_;
+
+        Generator get_return_object() {
+            return Generator(handle_type::from_promise(*this));
+        }
+        std::suspend_always initial_suspend() { return {}; }
+        std::suspend_always final_suspend() noexcept { return {}; }
+        void unhandled_exception() { exception_ = std::current_exception(); }//saving exception
+        template<std::convertible_to<T> From> // C++20 concept
+        std::suspend_always yield_value(From&& from) {
+            value_ = std::forward<From>(from);//caching the result in promise
+            return {};
+        }
+        void return_void() {}
+    };
+    handle_type h_;
+
+    Generator(handle_type h) : h_(h) {}
+    ~Generator() { h_.destroy(); }
+    explicit operator bool() {
+        fill();// The only way to reliably find out whether or not we finished coroutine, 
+        // whether or not there is going to be a next value generated (co_yield) in coroutine
+        // via C++ getter (operator () below) 
+        // is to execute/resume coroutine until the next co_yield point (or let it fall off end).
+        // Then we store/cache result in promise to allow getter (operator() below to grab it 
+        // without executing coroutine)
+        return !h_.done();
+    }
+    T operator()() {
+        fill();
+        full_ = false;//we are going to move out previously cached result to make promise empty again
+        return std::move(h_.promise().value_);
+    }
+
+private:
+    bool full_ = false;
+
+    void fill() {
+        if (!full_) {
+            h_();
+            if (h_.promise().exception_)
+                std::rethrow_exception(h_.promise().exception_);
+            //propagate coroutine exception in called context
+
+            full_ = true;
+        }
+    }
+};
+
+Generator<uint64_t>
+fibonacci_sequence(unsigned n)
+{
+
+    if (n == 0)
+        co_return;
+
+    if (n > 94)
+        throw std::runtime_error("Too big Fibonacci sequence. Elements would overflow.");
+
+    co_yield 0;
+
+    if (n == 1)
+        co_return;
+
+    co_yield 1;
+
+    if (n == 2)
+        co_return;
+
+    uint64_t a = 0;
+    uint64_t b = 1;
+
+    for (unsigned i = 2; i < n;i++)
+    {
+        uint64_t s = a + b;
+        co_yield s;
+        a = b;
+        b = s;
+    }
+}
+
+int main()
+{
+    try {
+
+        auto gen = fibonacci_sequence(10); //max 94 before uint64_t overflows
+
+        for (int j = 0;gen;j++)
+            std::cout << "fib(" << j << ")=" << gen() << '\n';
+
+    }
+    catch (const std::exception& ex)
+    {
+        std::cerr << "Exception: " << ex.what() << '\n';
+    }
+    catch (...)
+    {
+        std::cerr << "Unknown exception.\n";
+    }
+}
+```
+输出：
+```
+fib(0)=0
+fib(1)=1
+fib(2)=1
+fib(3)=2
+fib(4)=3
+fib(5)=5
+fib(6)=8
+fib(7)=13
+fib(8)=21
+fib(9)=34
+```
 ### 元编程(meta programming)
 通常的c++代码是用于直接生成字节码，而元编程的代码使用在生成通用的c++代码，再由c++代码生成字节码。元编程最大的用处就在于实现通用的库。
 元编程最常见的用法就是使用template生成可以接受不同的参数的类和函数。

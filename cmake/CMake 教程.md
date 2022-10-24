@@ -6,7 +6,7 @@ CMake 教程提供了逐步指南，涵盖了 CMake 可以解决的常见构建�
 
 最基本的项目是从源代码文件构建的可执行文件。对于简单项目，只需要三行`CMakeLists.txt`文件。这将是本教程的起点。`CMakeLists.txt`在`Step1`目录中创建一个 文件，如下所示：
 
-```makefile
+```cmake
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name
@@ -26,7 +26,7 @@ add_executable(Tutorial tutorial.cxx)
 
 首先，修改`CMakeLists.txt`文件以使用 [`project()`](https://cmake.org/cmake/help/latest/command/project.html#command:project "项目") 命令设置项目名称和版本号。
 
-```makefile
+```cmake
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name and version
@@ -37,7 +37,7 @@ project(Tutorial VERSION 1.0)
 
 然后，配置头文件以将版本号传递给源代码：
 
-```makefile
+```cmake
 configure_file(TutorialConfig.h.in TutorialConfig.h)
 
 
@@ -45,7 +45,7 @@ configure_file(TutorialConfig.h.in TutorialConfig.h)
 
 由于配置的文件将被写入二进制树，因此我们必须将该目录添加到路径列表中以搜索包含文件。将以下行添加到`CMakeLists.txt`文件的末尾：
 
-```makefile
+```cmake
 target_include_directories(Tutorial PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            )
@@ -53,7 +53,7 @@ target_include_directories(Tutorial PUBLIC
 
 使用您喜欢的编辑器，`TutorialConfig.h.in`在源目录中创建以下内容：
 
-```makefile
+```cmake
 // the configured options and settings for Tutorial
 #define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
 #define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
@@ -65,7 +65,7 @@ target_include_directories(Tutorial PUBLIC
 
 最后，通过`tutorial.cxx`如下更新来打印出版本号：
 
-```makefile
+```cmake
   if (argc < 2) {
     // report version
     std::cout << argv[0] << " Version " << Tutorial_VERSION_MAJOR << "."
@@ -79,7 +79,7 @@ target_include_directories(Tutorial PUBLIC
 
 接下来，我们`atof`用 `std::stod`in 替换为我们的项目添加一些 C ++ 11 功能`tutorial.cxx`。同时，删除 。`#include <cstdlib>`
 
-```makefile
+```c++
   const double inputValue = std::stod(argv[1]);
 
 
@@ -87,7 +87,7 @@ target_include_directories(Tutorial PUBLIC
 
 我们将需要在 CMake 代码中明确声明应使用正确的标志。在 CMake 中启用对特定 C ++ 标准的支持的最简单方法是使用 [`CMAKE_CXX_STANDARD`](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html#variable:CMAKE_CXX_STANDARD "CMAKE_CXX_STANDARD")变量。对于本教程，请设置 [`CMAKE_CXX_STANDARD`](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD.html#variable:CMAKE_CXX_STANDARD "CMAKE_CXX_STANDARD")将`CMakeLists.txt`文件中的变量设置 为 11 并 [`CMAKE_CXX_STANDARD_REQUIRED`](https://cmake.org/cmake/help/latest/variable/CMAKE_CXX_STANDARD_REQUIRED.html#variable:CMAKE_CXX_STANDARD_REQUIRED "CMAKE_CXX_STANDARD_REQUIRED") 改为 True：
 
-```makefile
+```cmake
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name and version
@@ -106,7 +106,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 例如，从命令行我们可以导航到`Help/guide/tutorial`CMake 源代码树的 目录并运行以下命令：
 
-```makefile
+```shell
 mkdir Step1_build
 cd Step1_build
 cmake ../Step1
@@ -115,7 +115,7 @@ cmake --build .
 
 导航到构建 Tutorial 的目录（可能是 make 目录或 Debug 或 Release 构建配置子目录），然后运行以下命令：
 
-```makefile
+```shell
 Tutorial 4294967296
 Tutorial 10
 Tutorial
@@ -132,13 +132,13 @@ Tutorial
 
 将以下一个行`CMakeLists.txt`文件添加到`MathFunctions` 目录：
 
-```makefile
+```cmake
 add_library(MathFunctions mysqrt.cxx)
 ```
 
 为了利用新库，我们将添加一个 [`add_subdirectory()`](https://cmake.org/cmake/help/latest/command/add_subdirectory.html#command:add_subdirectory "add_sub目录") 调用顶级`CMakeLists.txt`文件，以便构建库。我们将新库添加到可执行文件，并添加`MathFunctions`为包含目录，以便`mqsqrt.h`可以找到头文件。现在，顶级`CMakeLists.txt`文件的最后几行应如下所示：
 
-```makefile
+```cmake
 # add the MathFunctions library
 add_subdirectory(MathFunctions)
 
@@ -157,7 +157,7 @@ target_include_directories(Tutorial PUBLIC
 
 现在让我们将 MathFunctions 库设为可选。虽然对于本教程而言确实没有任何必要，但是对于较大的项目，这是常见的情况。第一步是向顶层`CMakeLists.txt`文件添加一个选项 。
 
-```makefile
+```cmake
 option(USE_MYMATH "Use tutorial provided math implementation" ON)
 
 # configure a header file to pass some of the CMake settings
@@ -169,7 +169,7 @@ configure_file(TutorialConfig.h.in TutorialConfig.h)
 
 下一个更改是使建立和链接 MathFunctions 库成为条件。为此，我们将顶级`CMakeLists.txt` 文件的末尾更改为如下所示：
 
-```makefile
+```cmake
 if(USE_MYMATH)
   add_subdirectory(MathFunctions)
   list(APPEND EXTRA_LIBS MathFunctions)
@@ -195,7 +195,7 @@ target_include_directories(Tutorial PUBLIC
 
 对源代码的相应更改非常简单。首先，如果需要，请在`tutorial.cxx`中包含`MathFunctions.h`标头：
 
-```makefile
+```c++
 #ifdef USE_MYMATH
 #  include "MathFunctions.h"
 #endif
@@ -205,7 +205,7 @@ target_include_directories(Tutorial PUBLIC
 
 然后，在同一文件中，`USE_MYMATH`控制使用哪个平方根函数：
 
-```makefile
+```c++
 #ifdef USE_MYMATH
   const double outputValue = mysqrt(inputValue);
 #else
@@ -240,7 +240,7 @@ target_include_directories(Tutorial PUBLIC
 
 记住`INTERFACE`是指消费者需要的东西，而生产者则不需要。将以下行添加到`MathFunctions/CMakeLists.txt`的末尾：
 
-```makefile
+```cmake
 target_include_directories(MathFunctions
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
           )
@@ -250,7 +250,7 @@ target_include_directories(MathFunctions
 
 既然我们已经指定了 MathFunction 的使用要求，我们就可以安全地`EXTRA_INCLUDES`从顶级`CMakeLists.txt`（这里）删除对变量 的使用：
 
-```makefile
+```cmake
 if(USE_MYMATH)
   add_subdirectory(MathFunctions)
   list(APPEND EXTRA_LIBS MathFunctions)
@@ -261,7 +261,7 @@ endif()
 
 和这里：
 
-```makefile
+```cmake
 target_include_directories(Tutorial PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            )
@@ -282,7 +282,7 @@ target_include_directories(Tutorial PUBLIC
 
 因此，`MathFunctions/CMakeLists.txt`我们最后添加：
 
-```makefile
+```cmake
 install(TARGETS MathFunctions DESTINATION lib)
 install(FILES MathFunctions.h DESTINATION include)
 
@@ -291,7 +291,7 @@ install(FILES MathFunctions.h DESTINATION include)
 
 并在顶层末尾`CMakeLists.txt`添加：
 
-```makefile
+```cmake
 install(TARGETS Tutorial DESTINATION bin)
 install(FILES "${PROJECT_BINARY_DIR}/TutorialConfig.h"
   DESTINATION include
@@ -312,7 +312,7 @@ CMake 变量 [`CMAKE_INSTALL_PREFIX`](https://cmake.org/cmake/help/latest/variab
 
 接下来让我们测试我们的应用程序。在顶级`CMakeLists.txt` 文件的末尾，我们可以启用测试，然后添加一些基本测试以验证应用程序是否正常运行。
 
-```makefile
+```cmake
 enable_testing()
 
 # does the application run
@@ -359,37 +359,32 @@ do_test(Tutorial 0.0001 "0.0001 is 0.01")
 
 如果平台具有`log`和`exp`函数,则我们将使用它们来计算函数中的平方根`mysqrt`。我们首先使用 `CMakeLists.txt`顶层模块[`CheckSymbolExists`](https://cmake.org/cmake/help/latest/module/CheckSymbolExists.html#module:CheckSymbolExists "CheckSymbolExists")测试这些函数的可用性。我们将在`TutorialConfig.h.in`中使用新的定义 ，因此请确保在配置该文件之前进行设置.
 
-```makefile
+```cmake
 include(CheckSymbolExists)
 set(CMAKE_REQUIRED_LIBRARIES "m")
 check_symbol_exists(log "math.h" HAVE_LOG)
 check_symbol_exists(exp "math.h" HAVE_EXP)
-
-
 ```
 
 Now let’s add these defines to `TutorialConfig.h.in` so that we can use them from `mysqrt.cxx`:
 
-```makefile
+```c++
 // does the platform provide exp and log functions?
 #cmakedefine HAVE_LOG
 #cmakedefine HAVE_EXP
+```
 
-
-```makefile
 
 If `log` and `exp` are available on the system, then we will use them to compute the square root in the `mysqrt` function. Add the following code to the `mysqrt` function in `MathFunctions/mysqrt.cxx` (don’t forget the `#endif` before returning the result!):
 
-```makefile
+```c++
 #if defined(HAVE_LOG) && defined(HAVE_EXP)
   double result = exp(log(x) * 0.5);
   std::cout << "Computing sqrt of " << x << " to be " << result
             << " using log and exp" << std::endl;
 #else
   double result = x;
-
-
-```makefile
+```
 
 We will also need to modify `mysqrt.cxx` to include `cmath`.
 
@@ -399,7 +394,7 @@ You will notice that we’re not using `log` and `exp`, even if we think they sh
 
 We will also need to update `MathFunctions/CMakeLists.txt` so `mysqrt.cxx` knows where this file is located:
 
-```makefile
+```cmake
 target_include_directories(MathFunctions
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
           PRIVATE ${CMAKE_BINARY_DIR}
@@ -420,7 +415,7 @@ First, remove the defines from `TutorialConfig.h.in`. We no longer need to inclu
 
 Next, we can move the check for `HAVE_LOG` and `HAVE_EXP` to `MathFunctions/CMakeLists.txt` and then specify those values as `PRIVATE` compile definitions.
 
-```makefile
+```cmake
 include(CheckSymbolExists)
 set(CMAKE_REQUIRED_LIBRARIES "m")
 check_symbol_exists(log "math.h" HAVE_LOG)
@@ -451,15 +446,13 @@ The next step is to add the appropriate commands to the `MathFunctions/CMakeList
 
 First, at the top of `MathFunctions/CMakeLists.txt`, the executable for `MakeTable` is added as any other executable would be added.
 
-```makefile
+```cmake
 add_executable(MakeTable MakeTable.cxx)
-
-
 ```
 
 Then we add a custom command that specifies how to produce `Table.h` by running MakeTable.
 
-```makefile
+```cmake
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Table.h
   COMMAND MakeTable ${CMAKE_CURRENT_BINARY_DIR}/Table.h
@@ -471,7 +464,7 @@ add_custom_command(
 
 Next we have to let CMake know that `mysqrt.cxx` depends on the generated file `Table.h`. This is done by adding the generated `Table.h` to the list of sources for the library MathFunctions.
 
-```makefile
+```cmake
 add_library(MathFunctions
             mysqrt.cxx
             ${CMAKE_CURRENT_BINARY_DIR}/Table.h
@@ -482,7 +475,7 @@ add_library(MathFunctions
 
 We also have to add the current binary directory to the list of include directories so that `Table.h` can be found and included by `mysqrt.cxx`.
 
-```makefile
+```cmake
 target_include_directories(MathFunctions
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
           PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
@@ -494,7 +487,7 @@ target_include_directories(MathFunctions
 
 Now let’s use the generated table. First, modify `mysqrt.cxx` to include `Table.h`. Next, we can rewrite the mysqrt function to use the table:
 
-```makefile
+```c++
 double mysqrt(double x)
 {
   if (x <= 0) {
@@ -535,7 +528,7 @@ Run the Tutorial executable and verify that it is using the table.
 
 Next suppose that we want to distribute our project to other people so that they can use it. We want to provide both binary and source distributions on a variety of platforms. This is a little different from the install we did previously in [Installing and Testing (Step 4)](#installing-and-testing-step-4) , where we were installing the binaries that we had built from the source code. In this example we will be building installation packages that support binary installations and package management features. To accomplish this we will use CPack to create platform specific installers. Specifically we need to add a few lines to the bottom of our top-level `CMakeLists.txt` file.
 
-```makefile
+```cmake
 include(InstallRequiredSystemLibraries)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
 set(CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
@@ -555,10 +548,8 @@ To specify the generator, use the `-G` option. For multi-config builds, use `-C`
 
 To create a source distribution you would type:
 
-```makefile
+```shell
 cpack --config CPackSourceConfig.cmake
-
-
 ```
 
 Alternatively, run `make package` or right click the `Package` target and `Build Project` from an IDE.
@@ -572,7 +563,7 @@ Adding support for submitting our test results to a dashboard is simple. We alre
 
 Replace:
 
-```makefile
+```cmake
 # enable testing
 enable_testing()
 
@@ -581,7 +572,7 @@ enable_testing()
 
 With:
 
-```makefile
+```cmake
 # enable dashboard scripting
 include(CTest)
 
@@ -592,7 +583,7 @@ The [`CTest`](https://cmake.org/cmake/help/latest/module/CTest.html#module:CTest
 
 We will also need to create a `CTestConfig.cmake` file in the top-level directory where we can specify the name of the project and where to submit the dashboard.
 
-```makefile
+```cmake
 set(CTEST_PROJECT_NAME "CMakeTutorial")
 set(CTEST_NIGHTLY_START_TIME "00:00:00 EST")
 
@@ -610,7 +601,7 @@ The [`ctest`](https://cmake.org/cmake/help/latest/manual/ctest.1.html#manual:cte
 
 Remember, for multi-config generators (e.g. Visual Studio), the configuration type must be specified:
 
-```makefile
+```shell
 ctest [-VV] -C Debug -D Experimental
 
 
@@ -637,7 +628,7 @@ A common usage of [`generator expressions`](https://cmake.org/cmake/help/latest/
 
 So the following code:
 
-```makefile
+```cmake
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -647,7 +638,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 Would be replaced with:
 
-```makefile
+```cmake
 add_library(tutorial_compiler_flags INTERFACE)
 target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)
 
@@ -656,7 +647,7 @@ target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)
 
 Next we add the desired compiler warning flags that we want for our project. As warning flags vary based on the compiler we use the `COMPILE_LANG_AND_ID` generator expression to control which flags to apply given a language and a set of compiler ids as seen below:
 
-```makefile
+```cmake
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 target_compile_options(tutorial_compiler_flags INTERFACE
@@ -680,7 +671,7 @@ The next step is to add the necessary information so that other CMake projects c
 
 The first step is to update our [`install(TARGETS)`](https://cmake.org/cmake/help/latest/command/install.html#command:install "安装") commands to not only specify a `DESTINATION` but also an `EXPORT`. The `EXPORT` keyword generates and installs a CMake file containing code to import all targets listed in the install command from the installation tree. So let’s go ahead and explicitly `EXPORT` the MathFunctions library by updating the `install` command in `MathFunctions/CMakeLists.txt` to look like:
 
-```makefile
+```cmake
 install(TARGETS MathFunctions tutorial_compiler_flags
         DESTINATION lib
         EXPORT MathFunctionsTargets)
@@ -691,31 +682,27 @@ install(FILES MathFunctions.h DESTINATION include)
 
 Now that we have MathFunctions being exported, we also need to explicitly install the generated `MathFunctionsTargets.cmake` file. This is done by adding the following to the bottom of the top-level `CMakeLists.txt`:
 
-```makefile
+```cmake
 install(EXPORT MathFunctionsTargets
   FILE MathFunctionsTargets.cmake
   DESTINATION lib/cmake/MathFunctions
 )
-
-
 ```
 
 At this point you should try and run CMake. If everything is setup properly you will see that CMake will generate an error that looks like:
 
-```makefile
+```log
 Target "MathFunctions" INTERFACE_INCLUDE_DIRECTORIES property contains
 path:
 
   "/Users/robert/Documents/CMakeClass/Tutorial/Step11/MathFunctions"
 
 which is prefixed in the source directory.
-
-
 ```
 
 What CMake is trying to say is that during generating the export information it will export a path that is intrinsically tied to the current machine and will not be valid on other machines. The solution to this is to update the MathFunctions [`target_include_directories()`](https://cmake.org/cmake/help/latest/command/target_include_directories.html#command:target_include_directories "target_include_directories") to understand that it needs different `INTERFACE` locations when being used from within the build directory and from an install / package. This means converting the [`target_include_directories()`](https://cmake.org/cmake/help/latest/command/target_include_directories.html#command:target_include_directories "target_include_directories") call for MathFunctions to look like:
 
-```makefile
+```cmake
 target_include_directories(MathFunctions
                            INTERFACE
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -729,7 +716,7 @@ Once this has been updated, we can re-run CMake and verify that it doesn’t war
 
 At this point, we have CMake properly packaging the target information that is required but we will still need to generate a `MathFunctionsConfig.cmake` so that the CMake [`find_package()`](https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package "find_package") command can find our project. So let’s go ahead and add a new file to the top-level of the project called `Config.cmake.in` with the following contents:
 
-```makefile
+```cmake
 @PACKAGE_INIT@
 
 include ( "${CMAKE_CURRENT_LIST_DIR}/MathFunctionsTargets.cmake" )
@@ -739,7 +726,7 @@ include ( "${CMAKE_CURRENT_LIST_DIR}/MathFunctionsTargets.cmake" )
 
 Then, to properly configure and install that file, add the following to the bottom of the top-level `CMakeLists.txt`:
 
-```makefile
+```cmake
 install(EXPORT MathFunctionsTargets
   FILE MathFunctionsTargets.cmake
   DESTINATION lib/cmake/MathFunctions
@@ -771,7 +758,7 @@ install(FILES
 
 At this point, we have generated a relocatable CMake Configuration for our project that can be used after the project has been installed or packaged. If we want our project to also be used from a build directory we only have to add the following to the bottom of the top level `CMakeLists.txt`:
 
-```makefile
+```cmake
 export(EXPORT MathFunctionsTargets
   FILE "${CMAKE_CURRENT_BINARY_DIR}/MathFunctionsTargets.cmake"
 )
@@ -792,7 +779,7 @@ First, we want to ensure that the debug and release builds use different names f
 
 Set [`CMAKE_DEBUG_POSTFIX`](https://cmake.org/cmake/help/latest/variable/CMAKE_DEBUG_POSTFIX.html#variable:CMAKE_DEBUG_POSTFIX "CMAKE_DEBUG_POSTFIX") near the beginning of the top-level `CMakeLists.txt` file:
 
-```makefile
+```cmake
 set(CMAKE_DEBUG_POSTFIX d)
 
 add_library(tutorial_compiler_flags INTERFACE)
@@ -802,7 +789,7 @@ add_library(tutorial_compiler_flags INTERFACE)
 
 And the [`DEBUG_POSTFIX`](https://cmake.org/cmake/help/latest/prop_tgt/DEBUG_POSTFIX.html#prop_tgt:DEBUG_POSTFIX "DEBUG_POSTFIX") property on the tutorial executable:
 
-```makefile
+```cmake
 add_executable(Tutorial tutorial.cxx)
 set_target_properties(Tutorial PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
@@ -813,7 +800,7 @@ target_link_libraries(Tutorial PUBLIC MathFunctions)
 
 Let’s also add version numbering to the MathFunctions library. In `MathFunctions/CMakeLists.txt`, set the [`VERSION`](https://cmake.org/cmake/help/latest/prop_tgt/VERSION.html#prop_tgt:VERSION "版") and [`SOVERSION`](https://cmake.org/cmake/help/latest/prop_tgt/SOVERSION.html#prop_tgt:SOVERSION "覆盖") properties:
 
-```makefile
+```cmake
 set_property(TARGET MathFunctions PROPERTY VERSION "1.0.0")
 set_property(TARGET MathFunctions PROPERTY SOVERSION "1")
 
@@ -822,7 +809,7 @@ set_property(TARGET MathFunctions PROPERTY SOVERSION "1")
 
 From the `Step12` directory, create `debug` and `release` subbdirectories. The layout will look like:
 
-```makefile
+```log
 - Step12
    └── debug
    └── release
@@ -832,7 +819,7 @@ From the `Step12` directory, create `debug` and `release` subbdirectories. The l
 
 Now we need to setup debug and release builds. We can use [`CMAKE_BUILD_TYPE`](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html#variable:CMAKE_BUILD_TYPE "CMAKE_BUILD_TYPE") to set the configuration type:
 
-```makefile
+```shell
 cd debug
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 cmake --build .
@@ -847,7 +834,7 @@ Now that both the debug and release builds are complete, we can use a custom con
 
 Next, use the `CPACK_INSTALL_CMAKE_PROJECTS` variable to specify which projects to install. In this case, we want to install both debug and release.
 
-```makefile
+```cmake
 include("release/CPackConfig.cmake")
 
 set(CPACK_INSTALL_CMAKE_PROJECTS
@@ -860,8 +847,6 @@ set(CPACK_INSTALL_CMAKE_PROJECTS
 
 From the `Step12` directory, run [`cpack`](https://cmake.org/cmake/help/latest/manual/cpack.1.html#manual:cpack(1) "cpack（1）")使用以下`config`选项指定我们的自定义配置文件：
 
-```makefile
+```shell
 cpack --config MultiCPackConfig.cmake
-
-
 ```
