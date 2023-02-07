@@ -615,8 +615,8 @@ public:
 ```
 
 ### Pimpl Idiom
-
-c++通过将私有的部分包装成一个单独的类来限制外界的访问.一个'pimpl'就是一个指针用于隐藏类的私有成员.
+ 
+`Pimpl`是`point to implementation`，c++通过将私有的部分包装成一个单独的类来限制外界的访问.一个'pimpl'就是一个用于隐藏类的私有指针成员。
 
 ```c++
 // file x.h
@@ -635,15 +635,100 @@ struct XImpl {
 };
 ```
 
+使用`std::unique_ptr`代替原始指针，由于在头文件中`control_pimpl`未被定义，需要自定义删除函数：
+
+```c++
+// in control.h
+class control_pimpl;
+
+class control
+{
+  std::unique_ptr<
+    control_pimpl, void(*)(control_pimpl*)> pimpl;
+  public:
+    control();
+    void set_text(std::string_view text);
+    void resize(int const w, int const h);
+    void show();
+    void hide();
+};
+
+// in control.cpp
+class control_pimpl
+{
+  std::string text;
+  int width = 0;
+  int height = 0;
+  bool visible = true;
+  void draw()
+  {
+    std::cout
+      << "control " << '\n'
+      << " visible: " << std::boolalpha << visible 
+      << std::noboolalpha << '\n'
+      << " size: " << width << ", " << height << '\n'
+      << " text: " << text << '\n';
+  }
+public:
+  void set_text(std::string_view t)
+  {
+    text = t.data();
+    draw();
+  }
+  void resize(int const w, int const h)
+  {
+    width = w;
+    height = h;
+    draw();
+  }
+  void show()
+  {
+    visible = true;
+    draw();
+  }
+  void hide()
+  {
+    visible = false;
+    draw();
+  }
+};
+
+control::control() :
+  pimpl(new control_pimpl(),
+        [](control_pimpl* pimpl) {delete pimpl; })
+{}
+
+void control::set_text(std::string_view text)
+{
+  pimpl->set_text(text);
+}
+void control::resize(int const w, int const h)
+{
+  pimpl->resize(w, h);
+}
+void control::show()
+{
+  pimpl->show();
+}
+void control::hide()
+{
+  pimpl->hide();
+}
+```
+
 这种方式的主要好处是打破了编译时依赖:
 
 - 类成员定义在cpp文件中,不再被客户代码访问,这减少了额外的`#include`并加快了编译速度;
 - 类的实现可能改变,这样私有的隐藏成员类可以自由的增减,不需要重新编译客户代码.
+- 改变内部实现不会影响公共接口。
 
 使用这个模式的代价是:
 
 - 每次构造和析构需要分配和释放内存;
-- 每次访问隐藏成员需要至少一次额外的重定向.
+- 每次访问隐藏成员需要至少一次额外的重定向；
+- 不能用于protected成员和私有虚函数。
+
+
 
 ### 运行时多态-虚函数的虚指针和虚函数表
 
