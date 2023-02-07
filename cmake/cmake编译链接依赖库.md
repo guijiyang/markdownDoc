@@ -2,7 +2,7 @@
  * @Author: jiyang Gui
  * @Date: 2022-10-24 10:49:28
  * @LastEditors: jiyang Gui
- * @LastEditTime: 2022-10-24 11:10:12
+ * @LastEditTime: 2023-02-07 16:23:51
  * @Description: 
  * guijiyang@163.com
  * Copyright (c) 2022 by jiyang Gui/GuisGame, All Rights Reserved. 
@@ -12,8 +12,8 @@
 ## 指定target的情况下
 
 ```cmake
-target_compile_options(-stdlib=libc++)
-target_link_options(--stdlib=libc++)
+target_compile_options(target_name -stdlib=libc++)
+target_link_options(target_name --stdlib=libc++)
 ```
 
 ## 全局的情况下
