@@ -168,3 +168,21 @@ git diff # 可是显示工作目录和暂存区之间的不同
 # 对比工作目录和上一条提交
 git diff HEAD # 可以显示工作目录和上一条提交之间不同，就是说：如果你现在把所有的文件都 add 然后 git commit，你将会提交什么
 ```
+
+## 常见问题
+ 
+- error: Your local changes to the following files would be overwritten by merge：
+    出现上述报错的原因是因为其他人修改了xxx.java文件并提交到了版本库，而我们本地也修改了xxx.java文件，这时进行pull自然就会产生冲突。
+**解决方法**
+执行git stash（IDEA中的菜单为Stash Changes）命令将工作区恢复到上次提交的内容，同时将本地所做的修改备份到暂存区，这样整个项目就回到了我们修改之前的状态，这时就可以正常git pull了，git pull完成后，执行git stash pop（IDEA中的菜单为Unstash Changes）命令将之前本地做的修改应用到当前工作区。
+**相关命令**
+git stash
+备份当前的工作区的内容，从最近的一次提交中读取相关内容，让工作区保证和上次提交的内容一致。同时，将当前的工作区内容保存到暂存区中。
+git pull
+拉取服务器上的代码到本地。
+git stash pop
+从暂存区读取最近一次保存的内容，恢复工作区的相关内容。由于可能存在多个Stash的内容，所以用栈来管理，pop会从最近的一个stash中读取内容并恢复。
+git stash list
+显示暂存区中的所有备份，可以利用这个列表来决定从那个地方恢复。
+git stash clear
+清空暂存区。
