@@ -91,6 +91,7 @@ git switch <NewBranchName>
 git switch -c <NewBranchName>
 ```
 ### 删除分支
+首先需要切换到其他分支
 ```shell
 git branch -d <BranchName>
 git push <RemoteStorageLocalName> --delete <BranchName>
@@ -105,6 +106,13 @@ git switch -t remotes/<RemoteStorageLocalName>/<BranchName>
 git checkout <BranchName> 
 # or 
 git switch <BranchName>
+```
+### 修改最后一次提交
+本地
+```shell
+git commit (-a) --ammend # 覆盖最近一次修改内容
+git commit --amend -m "New commit message" #覆盖最近一次修改的log
+git push <RemoteStorageLocalName> <BranchName> --force #覆盖远程前一次提交
 ```
 
 ## 版本回退

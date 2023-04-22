@@ -2,7 +2,7 @@
  * @Author: jiyang Gui
  * @Date: 2022-04-10 19:58:28
  * @LastEditors: jiyang Gui
- * @LastEditTime: 2022-04-23 18:54:44
+ * @LastEditTime: 2023-02-12 16:10:07
  * @Description: 
  * guijiyang@163.com
  * Copyright (c) 2022 by jiyang Gui/GuisGame, All Rights Reserved. 
@@ -120,14 +120,14 @@ libatomic.so.1 => /lib/x86_64-linux-gnu/libatomic.so.1 (0x00007fbb344b6000)
 
 ```
 ## 设置库链接路径
-通过在`/etc/ld.so.conf`下添加路径，可以增加依赖库查找的路径，注意这不同于编译时候的链接。
+通过在`/etc/ld.so.conf`下添加路径，可以增加运行时依赖库查找的路径，注意这不同于编译时候的链接。
 ```shell
 # 这是我自己添加的查找依赖库的路径
 $ cat /etc/ld.so.conf.d/llvm.conf 
 /usr/local/llvm-14.0.0/lib
 /usr/local/llvm-14.0.0/lib/x86_64-linux-gnu
 ```
-
+Linux 的先辈 Unix 还有一个环境变量 - LD_LIBRARY_PATH 来处理非标准路经的共享库。ld.so 加载共享库的时候，也会查找这个变量所设置的路经。但是，有不少声音主张要避免使用 LD_LIBRARY_PATH 变量，尤其是作为全局变量。
 ## 设置编译器链接库路径
 这是设置编译器在链接时候的库搜素路径
 ```shell
@@ -140,4 +140,32 @@ source /etc/profile or ~/.bashrc
 g++ -LlibPath
 ```
 
+## find
 
+在指定路径查找文件：
+```shell
+find <path> -name <doc>
+```
+
+### objdump
+
+查看文件信息
+```shell
+objdump <option> <name>
+```
+
+### readelf
+查看elf文件(executable and linkable format)
+
+```shell
+readelf <option> <name>
+```
+
+### c++filt还原编译后的c++函数名
+```shell
+c++filt _ZN5ATestC2Ev
+```
+输出：
+```shell
+ATest::ATest()
+```

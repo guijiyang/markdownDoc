@@ -244,8 +244,6 @@ target_include_directories(Tutorial PUBLIC
 target_include_directories(MathFunctions
           INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
           )
-
-
 ```
 
 既然我们已经指定了 MathFunction 的使用要求，我们就可以安全地`EXTRA_INCLUDES`从顶级`CMakeLists.txt`（这里）删除对变量 的使用：
@@ -255,8 +253,6 @@ if(USE_MYMATH)
   add_subdirectory(MathFunctions)
   list(APPEND EXTRA_LIBS MathFunctions)
 endif()
-
-
 ```
 
 和这里：
@@ -265,8 +261,6 @@ endif()
 target_include_directories(Tutorial PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            )
-
-
 ```
 
 完成后，运行 [`cmake`](https://cmake.org/cmake/help/latest/manual/cmake.1.html#manual:cmake(1) "cmake（1）") 可执行文件或 [`cmake-gui`](https://cmake.org/cmake/help/latest/manual/cmake-gui.1.html#manual:cmake-gui(1) "cmake-gui（1）")配置项目，然后使用您选择的构建工具或通过构建目录进行构建。`cmake --build .`

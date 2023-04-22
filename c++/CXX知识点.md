@@ -12,153 +12,155 @@ output: pdf_document
 
 <!-- code_chunk_output -->
 
-- [Learning CXX](#-centerlearning-cxxcenter)
-  - [C++特性](#-c特性)
-    - [类](#-类)
-      - [类的性质](#-类的性质)
-      - [隐式生存期类](#-隐式生存期类)
-      - [POD类](#-pod类)
-      - [注入类名](#-注入类名)
-      - [默认构造函数](#-默认构造函数)
-        - [平凡默认构造函数](#-平凡默认构造函数)
-        - [合格的默认构造函数](#-合格的默认构造函数)
-      - [复制构造函数](#-复制构造函数)
-        - [隐式声明的复制构造函数](#-隐式声明的复制构造函数)
-        - [弃置的隐式声明的复制构造函数](#-弃置的隐式声明的复制构造函数)
-      - [访问说明符](#-访问说明符)
-        - [公开成员访问](#-公开成员访问)
-        - [受保护成员访问](#-受保护成员访问)
-        - [私有成员访问](#-私有成员访问)
-    - [Pimpl Idiom](#-pimpl-idiom)
-    - [运行时多态-虚函数的虚指针和虚函数表](#-运行时多态-虚函数的虚指针和虚函数表)
-    - [智能指针](#-智能指针)
-      - [std::unique_ptr](#-stdunique_ptr)
-      - [std::shared_ptr](#-stdshared_ptr)
-    - [auto占位符](#-auto占位符)
-    - [元编程(meta programming)](#-元编程meta-programming)
-      - [type traits（类型特性）](#-type-traits类型特性)
-      - [异相容器](#-异相容器)
-      - [std::variant](#-stdvariant)
-      - [元编程应用](#-元编程应用)
-        - [c++ 反射实现](#-c-反射实现)
-        - [类型转换](#-类型转换)
-        - [通用类型安全转换函数](#-通用类型安全转换函数)
-    - [模板](#-模板)
-      - [模板实例化和特化](#-模板实例化和特化)
-      - [隐式实例化](#-隐式实例化)
-        - [函数模板隐式实例化](#-函数模板隐式实例化)
-        - [类模板隐式实例化](#-类模板隐式实例化)
-      - [显式实例化](#-显式实例化)
-      - [函数模板调用方式](#-函数模板调用方式)
-      - [模板特化](#-模板特化)
-        - [函数模板特化](#-函数模板特化)
-        - [类模板特化](#-类模板特化)
-      - [可变参数模板](#-可变参数模板)
-        - [使用折叠表达式(fold expression)简化可变参数函数模板](#-使用折叠表达式fold-expression简化可变参数函数模板)
-      - [SFINAE（替换失败不是一个错误）](#-sfinae替换失败不是一个错误)
-        - [解释](#-解释)
-        - [类型SFINAE](#-类型sfinae)
-        - [表达式SFINAE](#-表达式sfinae)
-        - [部分特化的SFINAE](#-部分特化的sfinae)
-        - [库支持](#-库支持)
-        - [SFINAE的替换方案](#-sfinae的替换方案)
-        - [实例](#-实例)
-        - [static_assert和std::enable_if区别](#-static_assert和stdenable_if区别)
-    - [约束和概念（constraint and concept）](#-约束和概念constraint-and-concept)
-      - [Concepts](#-concepts)
-      - [constraints](#-constraints)
-        - [合取Conjunctions](#-合取conjunctions)
-        - [析取Disjunctions](#-析取disjunctions)
-        - [Atomic constraints](#-atomic-constraints)
-      - [constraints 规范化](#-constraints-规范化)
-      - [需求从句（requires clauses）](#-需求从句requires-clauses)
-      - [需求表达式(requires expressions)](#-需求表达式requires-expressions)
-        - [简单需求](#-简单需求)
-        - [类型需求](#-类型需求)
-        - [复合需求](#-复合需求)
-        - [嵌套需求](#-嵌套需求)
-      - [约束的偏移Partial ordering of constraint](#-约束的偏移partial-ordering-of-constraint)
-    - [C++ 类中使用dllimport和dllexport](#-c-类中使用dllimport和dllexport)
-    - [容器类](#-容器类)
-      - [顺序容器](#-顺序容器)
-      - [关联容器](#-关联容器)
-      - [无序关联容器(c++11起)](#-无序关联容器c11起)
-      - [容器适配器](#-容器适配器)
-      - [迭代器失效](#-迭代器失效)
-    - [c++ 关键词](#-c-关键词)
-      - [cv(const 和 volatile)类型限定符](#-cvconst-和-volatile类型限定符)
-    - [std::function和std::bind](#-stdfunction和stdbind)
-      - [std::function](#-stdfunction)
-        - [介绍](#-介绍)
-        - [原型](#-原型)
-        - [用法](#-用法)
-      - [std::bind](#-stdbind)
-    - [lambda函数](#-lambda函数)
-      - [泛化和模板lambda](#-泛化和模板lambda)
-      - [递归lambda](#-递归lambda)
-    - [std::optional](#-stdoptional)
-    - [转发引用和完美转发](#-转发引用和完美转发)
-      - [值类别和变量类型](#-值类别和变量类型)
-        - [值类别](#-值类别)
-        - [变量类型](#-变量类型)
-        - [右值引用对纯右值的生命周期延长](#-右值引用对纯右值的生命周期延长)
-        - [表达式的左右值性与类型无关](#-表达式的左右值性与类型无关)
-      - [引用折叠](#-引用折叠)
-      - [转发引用](#-转发引用)
-      - [完美转发](#-完美转发)
-      - [std::forward](#-stdforward)
-      - [移动语义](#-移动语义)
-      - [std::move](#-stdmove)
-    - [constexpr](#-constexpr)
-      - [常量表达式 constexpr](#-常量表达式-constexpr)
-      - [if constexpr用于编译器选择分支](#-if-constexpr用于编译器选择分支)
-      - [constinit说明符(c++20起)](#-constinit说明符c20起)
-    - [consteval](#-consteval)
-    - [std::declval](#-stddeclval)
-    - [decltype 说明符](#-decltype-说明符)
-    - [结构化绑定声明(c++17)](#-结构化绑定声明c17)
-    - [多线程](#-多线程)
-      - [线程](#-线程)
-      - [互斥Mutex](#-互斥mutex)
-      - [互斥对象管理类模板--锁Lock](#-互斥对象管理类模板-锁lock)
-      - [互斥对象管理类模板的加锁策略](#-互斥对象管理类模板的加锁策略)
-      - [条件变量](#-条件变量)
-      - [原子操作atomic](#-原子操作atomic)
-      - [其他线程同步机制](#-其他线程同步机制)
-        - [std::latch](#-stdlatch)
-        - [std::barrier](#-stdbarrier)
-        - [信号量](#-信号量)
-      - [Future](#-future)
-        - [std::promise](#-stdpromise)
-        - [std::future](#-stdfuture)
-        - [std::shared_future](#-stdshared_future)
-        - [std::packaged_task](#-stdpackaged_task)
-        - [std::async](#-stdasync)
-    - [协程(c++20)](#-协程c20)
-      - [限制](#-限制)
-      - [执行](#-执行)
-      - [堆分配](#-堆分配)
-      - [承诺类型（Promise）](#-承诺类型promise)
-      - [co_await](#-co_await)
-      - [co_yield](#-co_yield)
-  - [现代c++编程手册](#-现代c编程手册)
-    - [控制和查询对象对齐](#-控制和查询对象对齐)
-    - [作用域枚举](#-作用域枚举)
-    - [对虚函数使用`override`和`final`](#-对虚函数使用override和final)
-    - [范围for循环](#-范围for循环)
-      - [使用范围for循环在范围上迭代](#-使用范围for循环在范围上迭代)
-      - [在自定义类型上使用范围for循环](#-在自定义类型上使用范围for循环)
-    - [使用类模板实参推断简化代码](#-使用类模板实参推断简化代码)
-    - [默认和删除函数](#-默认和删除函数)
-    - [高序函数(higher-order functions)](#-高序函数higher-order-functions)
-      - [实现高序函数(higher-order functions)的映射(map)和折叠(fold)](#-实现高序函数higher-order-functions的映射map和折叠fold)
-      - [组合函数到高序函数](#-组合函数到高序函数)
-    - [对任意可调用对象统一触发方式](#-对任意可调用对象统一触发方式)
-    - [向编译器的属性提供元数据](#-向编译器的属性提供元数据--)
-    - [实现并行映射map和折叠fold函数](#-实现并行映射map和折叠fold函数)
-    - [复制消除(copy elision)](#-复制消除copy-elision)
-      - [强制的复制/移动操作消除](#-强制的复制移动操作消除)
-      - [非强制的复制/移动 (C++11 起)操作消除](#-非强制的复制移动-c11-起操作消除)
+- [Learning CXX](#centerlearning-cxxcenter)
+  - [C++特性](#c特性)
+    - [类](#类)
+      - [类的性质](#类的性质)
+      - [注入类名](#注入类名)
+    - [默认和删除函数](#默认和删除函数)
+      - [规则3/5/0](#规则350)
+        - [规则3](#规则3)
+        - [规则5](#规则5)
+        - [规则0](#规则0)
+      - [默认构造函数](#默认构造函数)
+        - [平凡默认构造函数](#平凡默认构造函数)
+        - [合格的默认构造函数](#合格的默认构造函数)
+      - [复制构造函数](#复制构造函数)
+        - [隐式声明的复制构造函数](#隐式声明的复制构造函数)
+        - [弃置的隐式声明的复制构造函数](#弃置的隐式声明的复制构造函数)
+      - [访问说明符](#访问说明符)
+        - [公开成员访问](#公开成员访问)
+        - [受保护成员访问](#受保护成员访问)
+        - [私有成员访问](#私有成员访问)
+    - [Pimpl Idiom](#pimpl-idiom)
+    - [运行时多态-虚函数的虚指针和虚函数表](#运行时多态-虚函数的虚指针和虚函数表)
+    - [智能指针](#智能指针)
+      - [std::unique_ptr](#stdunique_ptr)
+      - [std::shared_ptr](#stdshared_ptr)
+    - [auto占位符](#auto占位符)
+    - [元编程(meta programming)](#元编程meta-programming)
+      - [type traits（类型特性）](#type-traits类型特性)
+      - [异相容器](#异相容器)
+      - [std::variant](#stdvariant)
+      - [元编程应用](#元编程应用)
+        - [c++ 反射实现](#c-反射实现)
+        - [类型转换](#类型转换)
+        - [通用类型安全转换函数](#通用类型安全转换函数)
+    - [模板](#模板)
+      - [模板实例化和特化](#模板实例化和特化)
+      - [隐式实例化](#隐式实例化)
+        - [函数模板隐式实例化](#函数模板隐式实例化)
+        - [类模板隐式实例化](#类模板隐式实例化)
+      - [显式实例化](#显式实例化)
+      - [函数模板调用方式](#函数模板调用方式)
+      - [模板特化](#模板特化)
+        - [函数模板特化](#函数模板特化)
+        - [类模板特化](#类模板特化)
+      - [使用类模板实参推断简化代码](#使用类模板实参推断简化代码)
+      - [可变参数模板](#可变参数模板)
+        - [使用折叠表达式(fold expression)简化可变参数函数模板](#使用折叠表达式fold-expression简化可变参数函数模板)
+      - [SFINAE（替换失败不是一个错误）](#sfinae替换失败不是一个错误)
+        - [解释](#解释)
+        - [类型SFINAE](#类型sfinae)
+        - [表达式SFINAE](#表达式sfinae)
+        - [部分特化的SFINAE](#部分特化的sfinae)
+        - [库支持](#库支持)
+        - [SFINAE的替换方案](#sfinae的替换方案)
+        - [实例](#实例)
+        - [static_assert和std::enable_if区别](#static_assert和stdenable_if区别)
+    - [约束和概念（constraint and concept）](#约束和概念constraint-and-concept)
+      - [Concepts](#concepts)
+      - [constraints](#constraints)
+        - [合取Conjunctions](#合取conjunctions)
+        - [析取Disjunctions](#析取disjunctions)
+        - [Atomic constraints](#atomic-constraints)
+      - [constraints 规范化](#constraints-规范化)
+      - [需求从句（requires clauses）](#需求从句requires-clauses)
+      - [需求表达式(requires expressions)](#需求表达式requires-expressions)
+        - [简单需求](#简单需求)
+        - [类型需求](#类型需求)
+        - [复合需求](#复合需求)
+        - [嵌套需求](#嵌套需求)
+      - [约束的偏移Partial ordering of constraint](#约束的偏移partial-ordering-of-constraint)
+    - [Windows平台dllimport和dllexport](#windows平台dllimport和dllexport)
+    - [容器类](#容器类)
+      - [顺序容器](#顺序容器)
+      - [关联容器](#关联容器)
+      - [无序关联容器(c++11起)](#无序关联容器c11起)
+      - [容器适配器](#容器适配器)
+      - [迭代器失效](#迭代器失效)
+    - [c++ 关键词](#c-关键词)
+      - [cv(const 和 volatile)类型限定符](#cvconst-和-volatile类型限定符)
+    - [std::function和std::bind](#stdfunction和stdbind)
+      - [std::function](#stdfunction)
+        - [介绍](#介绍)
+        - [原型](#原型)
+        - [用法](#用法)
+      - [std::bind](#stdbind)
+    - [lambda函数](#lambda函数)
+      - [泛化和模板lambda](#泛化和模板lambda)
+      - [递归lambda](#递归lambda)
+    - [std::optional (C++17)](#stdoptional-c17)
+    - [转发引用和完美转发](#转发引用和完美转发)
+      - [值类别和变量类型](#值类别和变量类型)
+        - [值类别](#值类别)
+        - [变量类型](#变量类型)
+        - [右值引用对纯右值的生命周期延长](#右值引用对纯右值的生命周期延长)
+        - [表达式的左右值性与类型无关](#表达式的左右值性与类型无关)
+      - [引用折叠](#引用折叠)
+      - [转发引用](#转发引用)
+      - [完美转发](#完美转发)
+      - [std::forward](#stdforward)
+      - [移动语义](#移动语义)
+      - [std::move](#stdmove)
+    - [constexpr说明符](#constexpr说明符)
+      - [if constexpr用于编译器选择分支](#if-constexpr用于编译器选择分支)
+      - [constinit说明符(c++20起)](#constinit说明符c20起)
+    - [consteval](#consteval)
+    - [std::declval](#stddeclval)
+    - [decltype 说明符](#decltype-说明符)
+    - [结构化绑定声明(c++17)](#结构化绑定声明c17)
+    - [多线程](#多线程)
+      - [线程](#线程)
+      - [互斥Mutex](#互斥mutex)
+      - [互斥对象管理类模板--锁Lock](#互斥对象管理类模板-锁lock)
+      - [互斥对象管理类模板的加锁策略](#互斥对象管理类模板的加锁策略)
+      - [条件变量](#条件变量)
+      - [原子操作atomic](#原子操作atomic)
+      - [其他线程同步机制](#其他线程同步机制)
+        - [std::latch](#stdlatch)
+        - [std::barrier](#stdbarrier)
+        - [信号量](#信号量)
+      - [Future](#future)
+        - [std::promise](#stdpromise)
+        - [std::future](#stdfuture)
+        - [std::shared_future](#stdshared_future)
+        - [std::packaged_task](#stdpackaged_task)
+        - [std::async](#stdasync)
+    - [协程(c++20)](#协程c20)
+      - [限制](#限制)
+      - [执行](#执行)
+      - [堆分配](#堆分配)
+      - [承诺类型（Promise）](#承诺类型promise)
+      - [co_await](#co_await)
+      - [co_yield](#co_yield)
+  - [现代c++编程手册](#现代c编程手册)
+    - [控制和查询对象对齐](#控制和查询对象对齐)
+    - [作用域枚举](#作用域枚举)
+    - [对虚函数使用`override`和`final`](#对虚函数使用override和final)
+    - [范围for循环](#范围for循环)
+      - [使用范围for循环在范围上迭代](#使用范围for循环在范围上迭代)
+      - [在自定义类型上使用范围for循环](#在自定义类型上使用范围for循环)
+    - [高序函数(higher-order functions)](#高序函数higher-order-functions)
+      - [实现高序函数(higher-order functions)的映射(map)和折叠(fold)](#实现高序函数higher-order-functions的映射map和折叠fold)
+      - [组合函数到高序函数](#组合函数到高序函数)
+    - [对任意可调用对象统一触发方式](#对任意可调用对象统一触发方式)
+    - [向编译器的属性提供元数据](#向编译器的属性提供元数据)
+    - [实现并行映射map和折叠fold函数](#实现并行映射map和折叠fold函数)
+    - [复制消除(copy elision)](#复制消除copy-elision)
+      - [强制的复制/移动操作消除](#强制的复制移动操作消除)
+      - [非强制的复制/移动 (C++11 起)操作消除](#非强制的复制移动-c11-起操作消除)
+    - [奇特的递归模板模式(CRTP)实现静态多态](#奇特的递归模板模式crtp实现静态多态)
 
 <!-- /code_chunk_output -->
 ## C++特性
@@ -212,14 +214,14 @@ output: pdf_document
 
 标准布局结构体 是以类关键词 `struct` 或类关键词 `class` 定义的标准布局类。标准布局联合体 是以类关键词 `union` 定义的标准布局类。
 
-#### 隐式生存期类
+**隐式生存期类**
 
 隐式生存期类 是满足以下条件之一的类：
 
 - 它是析构函数不由用户声明 (C++11 前)用户提供 (C++11 起)的聚合体，或
 - 至少有一个平凡且合格的构造函数和一个平凡且未被弃置的析构函数。
 
-#### POD类
+**POD类**
 
 POD 类 是满足以下所有条件的类：
 - 它是平凡类，
@@ -307,6 +309,128 @@ struct X<char, T>
 };
 ```
 
+### 默认和删除函数
+c++类有些特别的成员(构造函数，析构函数和赋值运算符)可以编译器默认实现或者开发者提供实现。
+特殊成员函数：
+- 构造函数
+- 析构函数
+- 复制构造函数
+- 移动构造函数
+- 复制赋值运算符
+- 移动赋值运算符
+
+声明函数为默认的需要使用`=default`代替函数体。只有类特殊成员函数可以声明为默认的：
+```c++
+struct foo
+{
+    foo() = default;
+};
+```
+删除一个函数需要使用`=delete`代替函数体。所有的函数都可以delete:
+```c++
+struct foo
+{
+    foo(const foo& )= = delete;
+};
+
+void func(int) = delete;
+```
+
+使用默认和删除函数是为了实现一些设计目的，如：
+- 为了实现类不可拷贝，需要声明拷贝构造和拷贝赋值运算符为delete:
+```c++
+class foo_not_copyable
+{
+    public:
+    foo_not_copyable()=default;
+
+    foo_not_copyable(const foo_not_copyable&)=delete;
+    foo_not_copyable& operator=(const foo_not_copyable&) = delete;
+};
+```
+- 为了实现类不可拷贝，但可移动，需要声明拷贝操作为delete，并显示实现移动操作：
+```c++
+class data_wrapper
+{
+    Data* data;
+    public:
+    data_wrapper(Data* d=nullptr):data(d){}
+    ~data_wrapper(){delete data;}
+
+    data_wrapper(const data_wrapper&) = delete;
+    data_wrapper& operator=(const data_wrapper&) = delete;
+
+    data_wrapper(data_wrapper&& other):data(std::move(other.data))
+    {
+        other.data=nullptr;
+    }
+
+    data_wrapper& operator=(data_wrapper&& other)
+    {
+        if(this!=std::addressof(other))
+        {
+            delete data;
+            data = std::move(other.data);
+            other.data=nullptr;
+        }
+
+        return *this;
+    }
+}
+```
+
+- 为了函数只能被指定的某类型调用，并阻止类型提升，为函数提供被删除的重载
+```c++
+template<typename T>
+void run(T val)= delete;
+
+void run(long val){} /* 只能被long类型调用 */
+```
+
+编译器隐式实现类特殊成员函数是根据以下的规则：
+- 如果自定义的构造函数(虚析构函数)存在，不会隐式生成构造(析构)函数。
+- 如果自定义的移动构造或移动赋值运算符存在，则不会隐式生成复制构造和复制赋值运算符。
+- 如果自定义复制构造，移动构造，复制赋值运算符，移动赋值运算符或析构函数存在，则不会隐式生成移动构造或移动赋值运算符。
+<!-- - 如果自定义复制构造或析构存在，则会生成默认复制赋值运算符。
+- 如果自定义复制赋值运算符或析构存在，则会生成默认复制构造函数。
+**Note that the last two rules in the preceding list are deprecated 
+rules and may no longer be supported by your compiler.** -->
+
+#### 规则3/5/0
+
+##### 规则3
+
+如果一个类需要一个自定义的析构，一个自定义复制构造，或一个自定义复制赋值运算符，则可以确定需要所有三者。
+如果使用隐式定义的特殊成员函数在类管理非类类型对象资源(原始指针，POSIX文件描述符等)通常都会出错，其析构基本不做任何事，且复制构造，赋值运算符执行浅拷贝(拷贝句柄的值而没有复制底层的资源)。
+
+##### 规则5
+
+因为自定义(或`=default`或`=delete`声明)的析构、复制构造或复制赋值运算符会阻止隐式定义的移动构造和移动赋值运算符的生成，所以对于需要移动语义的需要声明所有五个特殊成员函数：
+不同于规则3，没有提供移动构造和移动赋值运算符通常不是错误，只是失去了优化的机会。
+
+##### 规则0
+
+类在需要自定义析构、复制或移动构造、复制或移动赋值运算符应当仅仅处理自身的事务，其他的类不应该自定义这些特殊成员函数。
+
+```c++
+class rule_of_zero
+{
+    std::string cppstring;
+public:
+    rule_of_zero(const std::string& arg) : cppstring(arg) {}
+};
+
+// 对于作为基类的类需要自定义析构为公有且为虚，则需要显式声明所有其他特殊成员函数为default:
+class base_of_five_defaults
+{
+public:
+    base_of_five_defaults(const base_of_five_defaults&) = default;
+    base_of_five_defaults(base_of_five_defaults&&) = default;
+    base_of_five_defaults& operator=(const base_of_five_defaults&) = default;
+    base_of_five_defaults& operator=(base_of_five_defaults&&) = default;
+    virtual ~base_of_five_defaults() = default;
+};
+```
 #### 默认构造函数
 
 默认构造函数是不需要实参就能调用的构造函数。拥有公开默认构造函数的类型是可默认构造 (`DefaultConstructible`) 的。
@@ -435,7 +559,7 @@ int main()
 
 ##### 隐式声明的复制构造函数
 
-如果没有向类类型（`struct`、`class` 或 `union`）提供任何用户定义的复制构造函数，那么编译器总是会声明一个复制构造函数作为这个类的非 `explicit` 的 inline public 成员。如果满足下列所有条件，那么这个隐式声明的复制构造函数拥有形式 `T::T(const T&)`：
+如果没有为类类型（`struct`、`class` 或 `union`）提供任何用户定义的复制构造函数，那么编译器总是会声明一个复制构造函数作为这个类的非 `explicit` 的 inline public 成员。如果满足下列所有条件，那么这个隐式声明的复制构造函数拥有形式 `T::T(const T&)`：
 - T 的每个直接基类和虚基类 B 均拥有形参为 const B& 或 const volatile B& 的复制构造函数；
 - T 的每个类类型或类类型数组的非静态数据成员 M 均拥有形参为 const M& 或 const volatile M& 的复制构造函数。
 
@@ -451,7 +575,7 @@ int main()
 - T 拥有带被弃置或不可访问的析构函数的直接基类，虚基类或非静态数据成员；
 - T 是联合体式的类，且拥有带非平凡复制构造函数的变体成员；
 - T 拥有右值引用类型的数据成员；
-- T 拥有用户定义的移动构造函数或移动赋值运算符（此条件只会导致隐式声明的，而非预置的复制构造函数被弃置）。
+- T 拥有用户定义的移动构造函数或移动赋值运算符（此条件只会导致隐式声明的，而非预置的(使用了default)复制构造函数被弃置）。
 
 - 平凡的复制构造函数
 
@@ -518,6 +642,99 @@ private 基类	(6)
 5) 受保护继承：该访问说明符之后列出的基类的公开和受保护成员在派生类中是受保护成员，而基类的私有成员对派生类不可访问
 6) 私有继承：该访问说明符之后列出的基类的公开和受保护成员在派生类中是私有成员，而基类的私有成员对派生类不可访问
 
+- 公有继承
+派生类和基类属于`is-a`的关系，属于扩张类型
+- 受保护继承
+- 私有继承：类似于派生类的私有数据成员 `componenet`关系，私有继承用于：
+- - 派生类通过声明可访问基类公有成员函数， 这个`componenet`也可以做到：
+```c++
+class Base{
+    public:
+    void func(){}
+};
+
+class Derived : private Base{
+    using Base::func;
+    void get(){func();}
+};
+
+class Component {
+  Base base_;
+  public:
+  void get(){base_.size();}
+}
+```
+- - 派生类成员函数内派生类对象的指针或引用可以转换为基类对象的指针或引用，这个`componenet`也可以实现。
+```c++
+class Base{
+};
+
+class Derived : private Base{
+    public:
+    void get(){
+        Base* b=this;
+    }
+};
+
+class Component{
+  Base base_;
+  public:
+  void get(){
+    Base* b=&base_;
+  }
+}
+```
+- - 对于基类只有方法没有数据，私有继承可以不占用派生类对象的尺寸，使用`componenet`会增大尺寸。
+```c++
+#include <iostream>
+class Base {
+    void fun(){};
+};
+class Derived : private Base {
+    int num{0};
+};
+class Component {
+    Base base_;
+    int num{0};
+};
+
+int main() {
+    Derived d;
+    Component c;
+    std::cout << "derived class size: " << sizeof(d) << "\n"
+              << "component class size: " << sizeof(c) << std::endl;
+}
+```
+可能输出：
+```shell
+derived class size: 4
+component class size: 8
+```
+类对象最小占有1字节，由于成员的对齐要求，占用了4字节。
+- - 虚函数调用的时候，这种`componenet`无法实现：
+```c++
+#include <iostream>
+class Base{
+    public:
+    virtual void func(){std::cout<<"Base:func"<<std::endl;}
+    void get(){func();}
+};
+
+class Derived : private Base{
+    public:
+    void func(){std::cout<<"Derived:func"<<std::endl;}
+    void h(){get();}
+};
+
+int main() {
+    Derived d;
+    d.h();
+}
+```
+输出：
+```shell
+Derived:func
+```
 ##### 公开成员访问
 
 类的公开成员可以在任意位置访问。
@@ -635,7 +852,7 @@ struct XImpl {
 };
 ```
 
-使用`std::unique_ptr`代替原始指针，由于在头文件中`control_pimpl`未被定义，需要自定义删除函数：
+使用`std::unique_ptr`代替原始指针，由于在头文件中`control_pimpl`未被定义，需要自定义删除函数，或者实现控制类的析构函数：
 
 ```c++
 // in control.h
@@ -729,12 +946,11 @@ void control::hide()
 - 不能用于protected成员和私有虚函数。
 
 
-
 ### 运行时多态-虚函数的虚指针和虚函数表
 
-c++为了实现对象在运行时的动态调用函数使用了一种虚函数(vtable)的技术。
+c++为了实现对象在运行时的动态调用函数使用了一种虚函数(vftable)的技术。
 虚函数表是编译器在编译阶段为类分配的静态数组，每一个使用了虚函数的类都有自己的虚函数表，表中的存放的都是函数指针，指向该类访问的虚函数。
-同时，编译器还添加一个指向vtable的指针，称之为vptr，vptr在创建实例时自动设置。vptr的设定和重置都由每个类的构造、析构和拷贝赋值运算符自动完成。
+同时，编译器还添加一个指向vftable的指针，称之为vptr，vptr在创建实例时自动设置。vptr的设定和重置都由每个类的构造、析构和拷贝赋值运算符自动完成。
 
 ```c++
 #include <iostream>
@@ -1660,7 +1876,7 @@ auto safe_cast(const Src& v) -> Dst {
 模板参数至少有一个，参数分为三种类型：类型模板参数，非类型模板参数和模板模板参数。
 当提供了模板实参时，或当函数和类(c++17起)模板的模板实参被推导出时，它们替换模板形参以获取模板的特化（specialization），即一个特定类型或一个特定函数左值。特化也可以显示提供：对类、变量和函数模板允许全特化，只允许对类模板和变量模板部分特化（偏特化）。
 在要求完整对象类型的语境中引用某个类模板特化时，或在要求函数定义存在的语境中引用某个函数模板特化时，除非模板已经被显示特化或显示实例化，否则模板即被实例化（instantiate）(它的代码被实际编译)。类模板实例化不会实例化成员函数，除非这些成员函数被用到。链接时，不同编译单元生成的同一个实例化会融合起来。
-模板的定义必须在隐式实例化点可见，这就是为什么模板库通常将所有模板定义在头文件中（大多数boost库只有头文件）。
+**模板的定义必须在隐式实例化点可见，这就是为什么模板库通常将所有模板定义在头文件中（大多数boost库只有头文件）。**
 
 ```c++
 template<parameter-list> requires-clause(optional) declaration
@@ -1952,6 +2168,62 @@ public:
     }
 };
 ```
+
+#### 使用类模板实参推断简化代码
+
+在以下情况c++17实例化一个类模板，可以省略指定模板实参，并让编译器从初始化器的类型推导缺失的模板实参：
+- 声明变量或变量模板初始化，其中声明的类型是要推导实参的模板(可有cv限定):
+```c++
+std::pair p{42,"demo"};  // deduces as std::pair<int, char const*> p{42,"demo"};
+std::vector v{1,2}; // deduces as std::vector<int> v{1,2};
+std::less l; // deduces std::less<void> l;
+std::tuple t(4,3,2.5); // 同 auto t = std::make_tuple(4,3,2.5);
+```
+
+- 使用`new`表达式创建对象：
+
+```c++
+template<class T>
+struct foo
+{
+    foo(T v):data(v) {}
+private:
+    T data;
+};
+
+auto f = new foo(42); //分配的类型是 A<int>
+```
+
+- 执行类函数转化表达式：
+```c++
+std::mutex mx;
+
+//deduces std::lock_guard<std::mutex>
+auto lock = std::lock_guard(mx);
+
+std::vector<int> v;
+//deduces std::back_insert_iterator<std::vector<int>>
+std::fill_n(std::back_insert_iterator(v),5,42);
+
+std::for_each(v.begin(), v.end(), Foo([&](int i){...})) //推导出 Foo<T>，其中 T 是独有的 lambda 类型
+```
+
+- 非类型模板参数类型(c++20)：
+```c++
+template<class T>
+struct X
+{
+  constexpr X(T) {}
+
+  auto operator<=>(const X&) const=default;
+};
+
+template<X x>
+struct Y {};
+
+Y<0> y;  //推断为 Y<X<int>(0)>
+```
+
 
 #### 可变参数模板
 
@@ -2976,7 +3248,7 @@ void h(T); // #6
 h((int*)0); //ambiguous
 ```
 
-### C++ 类中使用dllimport和dllexport
+### Windows平台dllimport和dllexport
 
 在Windows平台下，编译动态库时：
 您可以使用`dllimport`或`dllexport`属性声明C++类。这些形式意味着导入或导出整个类。以这种方式导出的类称为可导出类。
@@ -2984,9 +3256,9 @@ h((int*)0); //ambiguous
 
 ```c++
 #ifdef DLLEXPORT
-#define _DLL_DECLARE_ declspec(dllexport)
+#define _DLL_DECLARE_ __declspec(dllexport)
 #else
-#define _DLL_DECLARE_ declspec(dllimport)
+#define _DLL_DECLARE_ __declspec(dllimport)
 
 class _DLL_DECLARE_ Math
 {
@@ -3719,7 +3991,7 @@ void sample()
 }
 ```
 
-### std::optional
+### std::optional (C++17)
 
 ```c++
 // Defined in header <optional>
@@ -3811,13 +4083,13 @@ digraph G{
 - 字符串字面值是左值,而且是不可被更改的左值。字符串字面值并不具名，但是可以用&取地址所以也是左值。
 - 如果一个表达式的类型是一个 lvalue reference (例如, `T&` 或 `const T&`, 等.)，那这个表达式就是一个 lvalue。
 
-纯右值是没有标识符、不可以取地址的表达式，一般也称之为“临时对象”。最常见的情况有：
+纯右值是没有标识符、不可以取地址的表达式。最常见的情况有：
 
 - 返回非引用类型的表达式或者函数.
   如 x++,x+1
 - 除字符串字面量之外的字面量如 42、true
 
-将亡值(xvalue):
+将亡值(xvalue),一般也称之为“临时对象”:
 
 - 返回类型为对象的右值引用的函数调用或重载运算符表达式，例如 std::move(x)。
 
@@ -3927,7 +4199,7 @@ C++ 会把即将离开作用域的非引用类型的返回值当成纯右值，�
 
 值类别(value category)和变量类型(variable type)是两个不相干的术语.前者指的是上面的左值,右值的概念,后者则是与引用类型相对而言的,表明一个变量是代表实际数值,还是引用另一个数值.在 c++中所有原生类型、枚举、结构、联合、类都代表值,只有引用和指针才是引用.在 Python 中一切类型都是引用类型.
 
-一个表达式的左值性(`lvalueness`)或者右值性(`rvalueness`)和它的值类型无关.
+一个表达式的左值性(`lvalueness`)或者右值性(`rvalueness`)和它的值类别无关.
 如 `lvalue` 的 `int` 变量和 `rvalue` 的 `int`字面量(字面值 10).或者一个 `Widget` 对象 `lvalue`(`Widget` 变量),`rvalue`(`Widget` 构造函数返回值).
 
 表达式的类型不会告诉你它到底是个`lvalue`还是`rvalue`。因为表达式的 `lvalueness` 或 `rvalueness` 独立于它的类型，我们就可以有一个 `lvalue`，但它的类型确是 `rvalue reference`，也可以有一个 `rvalue reference` 类型的 `rvalue` :
@@ -3998,7 +4270,7 @@ class Widget {
 template<typename T1>
 class Gadget {
     template<typename T2>
-    gadget(T2&&rhs); //deduced parameter type->type dedcue, forwarding reference
+    Gadget(T2&&rhs); //deduced parameter type->type dedcue, forwarding reference
 };
 
 void f(Widget&& param);  //fully specified parameter type -> no type deduce, rvalue reference
@@ -4229,9 +4501,7 @@ constexpr typename std::remove_reference_t<T>::type&& move(T&& t)
 
 最后，std::move()/std::forward() 只是编译时的变量类型转换，不会产生目标代码。
 
-### constexpr
-
-#### 常量表达式 constexpr
+### constexpr说明符
 
 c++中,我们通常使用 const 来表示常量,这种常量指的是运行期间常量.然后我们需要编译期间的常量性,这是 const 关键字无法保证的.如下的例子
 
@@ -4255,7 +4525,7 @@ int main()
 ```
 
 当然可以通过定义宏代替 GetConst 函数。但是这个办法是过于原始，有很多缺点。c++11 中对编译期间的常量可以使用 constexpr。
-constexpr 说明符声明在编译的阶段可以确定变量或者函数的值.这样的函数(提供了合适的函数参数)或变量然后能用于在编译期间需要常量表达式的地方.
+constexpr 说明符声明在编译的阶段可能确定变量或者函数的值.这样的函数(提供了合适的函数参数)或变量然后能用于在编译期间需要常量表达式的地方.
 
 一个 constexpr 说明符用于对象申明或非静态成员函数声明(c++17 前)暗示了这是一个常量或常量函数.一个 constexpr 用于函数或静态成员变量声明(c++17 起)则暗含 inline.如果任何函数或函数模板的声明含有 constexpr 说明符,然后每个声明必须包含那个说明符.
 
@@ -4396,6 +4666,7 @@ a->speak();
 ```
 
 #### constinit说明符(c++20起)
+
 `constinit`断言变量拥有**静态初始化，即零初始化与常量初始化**，否则程序非良构。
 
 `constinit`说明符声明拥有静态或线程存储期的变量。若变量以`constinit`声明，则其初始化声明必须应用`constinit`。若`constinit`声明的变量拥有动态初始化，则程序非良构。
@@ -4512,19 +4783,20 @@ inline typename std::add_rvalue_reference<T>::type declval() noexcept
 检查实体的声明类型,或表达式的类型和值类别.
 
 ```c++
-decltype (entity)
-decltype (expression)
+decltype (entity)   (1)
+decltype (expression)   (2)
 ```
 
-- 如果参数是某个无括号标识表达式或某个无括号类成员访问表达式,则 decltype 产生以此表达式命名的实体的类型.若无这种实体,或该实参指名某个重载函数,则程序非良构.
-- 如果参数是指名某个[结构化绑定](#结构化绑定)的无括号的id表达式,则 decltype 生成被引用的类型(结构化绑定声明的规范中描述).(c++17 起);
-- 如果参数是指名某个非类型模板参数的无括号id表达式,则 decltype 生成模板形参类型（模板形参是占位类型时经过必要的类型推断后）就算模板参数对象是const得到的类型也是non-const.(c++20 起).
-- 若参数是其他类型为`T`的任何表达式,且:
+1) 如果实参是某个无括号的标识表达式(id-expression)或某个无括号类成员访问表达式,则 decltype 产生以此表达式命名的实体的类型.若无这种实体,或该实参指名某个重载函数,则程序非良构.
+  如果实参是指名(naming)某个[结构化绑定](#结构化绑定)的无括号的id表达式,则 decltype 生成被引用的类型(结构化绑定声明的规范中描述).(c++17 起);
+  如果实参是指名某个非类型模板形参的无括号id表达式,则 decltype 生成模板形参类型（当该模板形参以占位符类型声明时，类型会先进行任何所需的类型推导）。就算实体是模板形参对象(这是const对象)，类型也是non-const.(c++20 起).
+2) 若参数是其他类型为`T`的任何表达式,且:
    a) 若值类型为将亡值,则 decltype 产生`T&&`;
    b) 若值类型为左值,则 decltpye 产生`T&`;
    c) 若值类型是纯右值,则 decltype 产生`T`.
+   如果表达式是(带括号的)立即调用以外的纯右值，那么不会从该纯右值实质化临时对象：即这种纯右值没有结果对象。
 
-请注意，如果对象的名称带有括号，则将其视为普通的左值表达式，因此 decltype(x) 和 decltype((x)) 通常是不同的类型。
+请注意，如果对象的名称带有括号，则其视为普通的左值表达式，因此 decltype(x) 和 decltype((x)) 通常是不同的类型。
 
 decltype 在声明难以或不可能使用标准表示法声明的类型时很有用，例如与 lambda 相关的类型或依赖于模板参数的类型。
 
@@ -6345,126 +6617,6 @@ void print_dummy_array(dummy_array<T, Size> const & arr)
 }
 ```
 
-### 使用类模板实参推断简化代码
-
-在以下情况c++17可以省略指定模板实参，并让编译器推断：
-- 声明变量或变量模板并初始化:
-```c++
-std::pair p{42,"demo"};  // deduces std::pair<int, char const*>
-std::vector v{1,2}; // deduces std::vector<int>
-std::less l; // deduces std::less<void>
-```
-- 使用`new`表达式创建对象：
-```c++
-template<class T>
-struct foo
-{
-    foo(T v):data(v) {}
-private:
-    T data;
-};
-
-auto f = new foo(42);
-```
-- 执行类函数转化表达式：
-```c++
-std::mutex mx;
-
-//deduces std::lock_guard<std::mutex>
-auto lock = std::lock_guard(mx);
-
-std::vector<int> v;
-//deduces std::back_insert_iterator<std::vector<int>>
-std::fill_n(std::back_insert_iterator(v),5,42);
-```
-
-### 默认和删除函数
-c++类有些特别的成员(构造函数，析构函数和赋值运算符)可以编译器默认实现或者开发者提供实现。
-特殊成员函数：
-- 构造函数
-- 析构函数
-- 复制构造函数
-- 移动构造函数
-- 复制赋值运算符
-- 移动赋值运算符
-
-声明函数为默认的需要使用`=default`代替函数体。只有类特殊成员函数可以声明为默认的：
-```c++
-struct foo
-{
-    foo() = default;
-};
-```
-删除一个函数需要使用`=delete`代替函数体。所有的函数都可以delete:
-```c++
-struct foo
-{
-    foo(const foo& )= = delete;
-};
-
-void func(int) = delete;
-```
-
-使用默认和删除函数是为了实现一些设计目的，如：
-- 为了实现类不可拷贝，需要声明拷贝构造和拷贝赋值运算符为delete:
-```c++
-class foo_not_copyable
-{
-    public:
-    foo_not_copyable()=default;
-
-    foo_not_copyable(const foo_not_copyable&)=delete;
-    foo_not_copyable& operator=(const foo_not_copyable&) = delete;
-};
-```
-- 为了实现类不可拷贝，但可移动，需要声明拷贝操作为delete，并显示实现移动操作：
-```c++
-class data_wrapper
-{
-    Data* data;
-    public:
-    data_wrapper(Data* d=nullptr):data(d){}
-    ~data_wrapper(){delete data;}
-
-    data_wrapper(const data_wrapper&) = delete;
-    data_wrapper& operator=(const data_wrapper&) = delete;
-
-    data_wrapper(data_wrapper&& other):data(std::move(other.data))
-    {
-        other.data=nullptr;
-    }
-
-    data_wrapper& operator=(data_wrapper&& other)
-    {
-        if(this!=std::addressof(other))
-        {
-            delete data;
-            data = std::move(other.data);
-            other.data=nullptr;
-        }
-
-        return *this;
-    }
-}
-```
-
-- 为了函数只能被指定的某类型调用，并阻止类型提升，为函数提供被删除的重载
-```c++
-template<typename T>
-void run(T val)= delete;
-
-void run(long val){} /* 只能被long类型调用 */
-```
-
-编译器默认实现类特殊成员函数是根据以下的规则：
-- 如果自定义的构造函数(虚析构函数)存在，默认构造(析构)函数不会生成。
-- 如果自定义的移动构造或移动赋值运算符存在，则不会生成默认复制构造和复制赋值运算符。
-- 如果自定义复制构造，移动构造，复制赋值运算符，移动赋值运算符或析构函数存在，则不会生成默认移动构造或移动赋值运算符。
-- 如果自定义复制构造或析构存在，则会生成默认复制赋值运算符。
-- 如果自定义复制赋值运算符或析构存在，则会生成默认复制构造函数。
-Note that the last two rules in the preceding list are deprecated 
-rules and may no longer be supported by your compiler.
-
 ### 高序函数(higher-order functions)
 
 高序函数是将一个函数作为参数并应用到一个范围(`list` `vector` `map` `tree`等)，并产生一个新的范围或值。
@@ -7170,8 +7322,8 @@ struct D:C
 
 #### 非强制的复制/移动 (C++11 起)操作消除
 下列环境下，允许但不要求编译器省略类对象的复制和移动 (C++11 起)构造，即使复制/移动 (C++11 起)构造函数和析构函数拥有可观察的副作用。这些对象将直接构造到它们本来要复制/移动到的存储中。这是一项优化：即使进行了优化而不调用复制/移动 (C++11 起)构造函数，它仍然必须存在且可访问（如同完全未发生优化），否则程序非良构：
-- `return` 语句中，当操作数是拥有自动存储期的非 `volatile` 对象的名字，该名字不是函数形参或 `catch` 子句形参，且其具有与函数返回类型相同的类类型（忽略 cv 限定）时。这种复制消除的变体被称为 NRVO，“具名返回值优化 (named return value optimization)”。
-- 在对象的初始化中，当源对象是无名临时量且与目标对象具有相同类型（忽略 cv 限定）时。当无名临时量为 return 语句的操作数时，称这种复制消除的变体为 RVO，“返回值优化 (return value optimization)”。 (c++17前)
+- `return` 语句中，当操作数是拥有自动存储期的非 `volatile` 对象的名字，该名字不是函数形参或 `catch` 子句形参，且其具有与函数返回类型相同的类类型（忽略 `cv` 限定）时。这种复制消除的变体被称为 `NRVO`，“具名返回值优化 (named return value optimization)”。
+- 在对象的初始化中，当源对象是无名临时量(将亡值？)且与目标对象具有相同类型（忽略 `cv` 限定）时。当无名临时量为 `return` 语句的操作数时，称这种复制消除的变体为 `RVO`，“返回值优化 (return value optimization)”。 (c++17前)
 返回值优化是强制要求的，而不再被当做复制消除；见上文。(c++17起)
 - 在协程中，可以消除将形参向协程状态内的复制/移动，只要除了对形参的构造函数与析构函数的调用被忽略以外，不改变程序的行为即可。这种情形可以在暂停点后始终不使用形参，或者整个协程状态本就始终不在堆上分配时出现。
 
@@ -7252,4 +7404,75 @@ int main() {
     g(f()); // 从 f() 返回的临时量（C++17 前）/ 纯右值 f()（C++17 起）
             // 初始化 g() 的形参中的复制消除
 }
+```
+
+###  奇特的递归模板模式(CRTP)实现静态多态
+
+CRTP(curiously recurring template pattern)允许派生类重载(overload)基类的函数实现多态。这种多态和运行时多态不同，属于编译时多态。
+使用CRTP的好处是减少对象内存尺寸，相比虚函数多态的对象少了虚指针，并加快了运行速度(不需要虚指针和虚函数表跳转)。需要注意的是类模板的析构函数还是需要设置为virtual，以便准确的析构。
+
+```c++
+template<typename D> class B{
+  public:
+  /* ... */
+  void f(int i){static_cast<D*>(this)->f(i);}
+  protected:
+  int i_;
+};
+
+class D :public B<D>
+{
+  public:
+  void f(int i) {i_+=i;}
+};
+```
+现在调用`B::f()`，将在内部调用实际派生类的方法，就像是一个虚函数调用一样。
+
+```c++
+template <class T>
+class control
+{
+public:
+ void draw()
+ {
+ static_cast<T*>(this)->erase_background();
+ static_cast<T*>(this)->paint();
+ }
+};
+
+class button : public control<button>
+{
+public:
+ void erase_background()
+ {
+ std::cout << "erasing button background..." << '\n';
+ }
+ void paint()
+ {
+ std::cout << "painting button..." << '\n';
+ }
+};
+class checkbox : public control<checkbox>
+{
+public:
+ void erase_background()
+ {
+ std::cout << "erasing checkbox background..."
+ << '\n';
+ }
+ void paint()
+ {
+ std::cout << "painting checkbox..." << '\n';
+ }
+};
+
+template <class T>
+void draw_control(control<T>& c)
+{
+ c.draw();
+}
+button b;
+draw_control(b);
+checkbox c;
+draw_control(c);
 ```
