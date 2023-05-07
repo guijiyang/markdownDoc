@@ -1,5 +1,4 @@
 # <center>VSCode 配置</center>
-<!-- @import "my-style.less" -->
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -70,7 +69,7 @@
 |快捷键|作用|
 |:-:|:-|
 |Ctrl+T|弹出工作区中选中符号的所有位置，随后可以跳转到指定的位置|
-|Ctrl+G|转到指定行|
+|Ctrl+G|焦点不在终端时，转到指定行|
 |Ctrl+P|转到文件|
 |Ctrl+Shift+O|弹出当前编辑器中的所有符号，随后可以选择其中的符号跳转到该位置|
 |F8|跳转到当前编辑器中的下一个错误或者警告|
@@ -109,7 +108,7 @@
 |:-|:-|
 |Ctrl+Space, Ctrl+I|触发提示|
 |Shift+Alt+F|格式化文档|
-|F12|跳转到定义或声明(C/C++)|
+|F12|跳转到定义或声明|
 |Ctrl+K F12|在侧边编辑器打开定义|
 |Ctrl+.|快速修复|
 |Shift+F12|弹窗显示所有引用|
@@ -143,6 +142,7 @@
 |Ctrl+K P,Shift+Alt+c|复制活动文件路径|
 |Ctrl+K R|打开当前编辑器文件的文件夹|
 |Ctrl+K O|在新的窗口(实例)打开当前编辑器文件|
+|Ctrl+R|焦点不在终端时，打开最近使用的文件夹列表|
 
 ### 显示
 
@@ -180,6 +180,7 @@
 |Ctrl+Shift+`|创建新终端|
 |Ctrl+Shift+Y|切换调试控制台|
 |Ctrl+Shift+M|展示问题面板|
+|Ctrl+R|焦点在终端时，搜索最近使用的命令|
 |Ctrl+Alt+R|焦点在终端时，展示最近使用命令面板，可以自行选择执行命令|
 |Ctrl+G|焦点在终端时，展示最近使用的目录，可以自行选择转到的目录|
 

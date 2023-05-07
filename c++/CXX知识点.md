@@ -166,19 +166,20 @@ output: pdf_document
 ## C++特性
 
 ### 类
- 
+
 类是一种用户定义类型。
 类可以拥有下列种类的成员：
+
 - 数据成员：
-- - 非静态数据成员，包括位域。
-- - 静态数据成员
+    - - 非静态数据成员，包括位域。
+    - - 静态数据成员
 - 成员函数：
-- - 非静态成员函数
-- - 静态成员函数
+    - - 非静态成员函数
+    - - 静态成员函数
 - 嵌套类型：
-- - 在类定义之中定义的嵌套类及枚举
-- - 既存类型的别名，以`typedef`或类型别名声明定义
-- - 就查找而言（除非在用作构造函数名时），类的名字在该类自身的定义中，表现为一个作为其自身的类型别名的公开成员：这被称作注入类名
+    - - 在类定义之中定义的嵌套类及枚举
+    - - 既存类型的别名，以`typedef`或类型别名声明定义
+    - - 就查找而言（除非在用作构造函数名时），类的名字在该类自身的定义中，表现为一个作为其自身的类型别名的公开成员：这被称作注入类名
 - 来自定义于类中的所有无作用域枚举，或由 using 声明或 using enum 声明引入 (C++20 起)的枚举项
 - 成员模板（变量模板、 (C++14 起)类模板或函数模板）可以在任何非局部 `class/struct/union` 定义体内出现
 
@@ -189,6 +190,7 @@ output: pdf_document
 #### 类的性质
 
 **可平凡复制类**需要满足以下所有条件：
+
 - 至少有一个合格的复制构造函数，移动构造函数，复制赋值运算符或移动赋值运算符。
 - 每个合格的复制构造函数都是平凡的，
 - 每个合格的移动构造函数都是平凡的，
@@ -200,17 +202,18 @@ output: pdf_document
 - 有一个或多个合格的默认构造函数，它们全部都是平凡的。
 
 **标准布局类**是满足以下所有条件的类：
+
 - 没有具有非标准布局类类型(或这种类型的数组)或到它们的引用的非静态数据成员，
 - 没有虚函数和虚基类
 - 所有非静态数据成员都具有相同的可访问性，
 - 没有非标准布局的基类
 - 该类和它的所有基类中的非静态数据成员和位域都在相同的类中首次声明，并且
 - 给定该类为 S，且作为基类时集合 M(S) 没有元素，其中 M(X) 对于类型 X 定义如下：
-- - 如果 X 是没有（可能继承来的）非静态数据成员的非联合体类类型，那么集合 M(X) 为空。
-- - 如果 X 是首个非静态数据成员（可能是匿名联合体）具有 X0 类型的非联合体类类型，那么集合 M(X) 包含 X0 和 M(X0) 中的元素。
-- - 如果 X 是联合体类型，集合 M(X) 是包含所有 Ui 的集合与每个 M(Ui) 集合的并集，其中每个 Ui 是 X 的第 i 个非静态数据成员的类型。
-- - 如果 X 是元素类型是 Xe 的数组类型，集合 M(X) 包含 Xe 和 M(Xe) 中的元素。
-- - 如果 X 不是类类型或数组类型，那么集合 M(X) 为空。
+    - - 如果 X 是没有（可能继承来的）非静态数据成员的非联合体类类型，那么集合 M(X) 为空。
+    - - 如果 X 是首个非静态数据成员（可能是匿名联合体）具有 X0 类型的非联合体类类型，那么集合 M(X) 包含 X0 和 M(X0) 中的元素。
+    - - 如果 X 是联合体类型，集合 M(X) 是包含所有 Ui 的集合与每个 M(Ui) 集合的并集，其中每个 Ui 是 X 的第 i 个非静态数据成员的类型。
+    - - 如果 X 是元素类型是 Xe 的数组类型，集合 M(X) 包含 Xe 和 M(Xe) 中的元素。
+    - - 如果 X 不是类类型或数组类型，那么集合 M(X) 为空。
 
 标准布局结构体 是以类关键词 `struct` 或类关键词 `class` 定义的标准布局类。标准布局联合体 是以类关键词 `union` 定义的标准布局类。
 
@@ -224,6 +227,7 @@ output: pdf_document
 **POD类**
 
 POD 类 是满足以下所有条件的类：
+
 - 它是平凡类，
 - 它是标准布局类，并且
 - 没有具有非 POD 类类型（或这种类型的数组）的非静态数据成员。
@@ -238,6 +242,7 @@ POD 属性的使用被弃用。用户代码应该期待或要求平凡或标准�
 类模板中，注入类名能用作指代当前模板的模板名，或指代当前实例化的类名。
 
 在类作用域中，当前类的名字会被视为一个公开成员名：这被称为注入类名（`injected-class-name`）。该名字的声明点紧跟类定义的开花括号之后。
+
 ```c++
 int X;
 
@@ -265,6 +270,7 @@ struct C : public B
 
 在类模板中也拥有注入类名。它的注入类名可以被用作模板名或类型名。
 下列情况下，注入类名被当做类模板自身的模板名：
+
 - 它后面跟着 <
 - 它被用作模板模板实参
 - 它是某个友元类模板声明的详述类型说明符中的最后标识符。
@@ -288,6 +294,7 @@ struct X
 ```
 
 在类模板特化或部分特化的作用域内，当将注入类名用作类型名时，它等价于模板名后随环绕于 <> 中的该类模板特化或部分特化的各个模板实参。
+
 ```c++
 template<>
 struct X<void, void>
@@ -310,8 +317,10 @@ struct X<char, T>
 ```
 
 ### 默认和删除函数
+
 c++类有些特别的成员(构造函数，析构函数和赋值运算符)可以编译器默认实现或者开发者提供实现。
 特殊成员函数：
+
 - 构造函数
 - 析构函数
 - 复制构造函数
@@ -320,13 +329,16 @@ c++类有些特别的成员(构造函数，析构函数和赋值运算符)可以
 - 移动赋值运算符
 
 声明函数为默认的需要使用`=default`代替函数体。只有类特殊成员函数可以声明为默认的：
+
 ```c++
 struct foo
 {
     foo() = default;
 };
 ```
+
 删除一个函数需要使用`=delete`代替函数体。所有的函数都可以delete:
+
 ```c++
 struct foo
 {
@@ -337,7 +349,9 @@ void func(int) = delete;
 ```
 
 使用默认和删除函数是为了实现一些设计目的，如：
+
 - 为了实现类不可拷贝，需要声明拷贝构造和拷贝赋值运算符为delete:
+
 ```c++
 class foo_not_copyable
 {
@@ -348,7 +362,9 @@ class foo_not_copyable
     foo_not_copyable& operator=(const foo_not_copyable&) = delete;
 };
 ```
+
 - 为了实现类不可拷贝，但可移动，需要声明拷贝操作为delete，并显示实现移动操作：
+
 ```c++
 class data_wrapper
 {
@@ -380,6 +396,7 @@ class data_wrapper
 ```
 
 - 为了函数只能被指定的某类型调用，并阻止类型提升，为函数提供被删除的重载
+
 ```c++
 template<typename T>
 void run(T val)= delete;
@@ -388,6 +405,7 @@ void run(long val){} /* 只能被long类型调用 */
 ```
 
 编译器隐式实现类特殊成员函数是根据以下的规则：
+
 - 如果自定义的构造函数(虚析构函数)存在，不会隐式生成构造(析构)函数。
 - 如果自定义的移动构造或移动赋值运算符存在，则不会隐式生成复制构造和复制赋值运算符。
 - 如果自定义复制构造，移动构造，复制赋值运算符，移动赋值运算符或析构函数存在，则不会隐式生成移动构造或移动赋值运算符。
@@ -431,16 +449,17 @@ public:
     virtual ~base_of_five_defaults() = default;
 };
 ```
+
 #### 默认构造函数
 
 默认构造函数是不需要实参就能调用的构造函数。拥有公开默认构造函数的类型是可默认构造 (`DefaultConstructible`) 的。
 
 ```shell
-类名 ();	(1)	
-类名 :: 类名 () 函数体	(2)	
-类名 () = delete;	(3)	(C++11 起)
-类名 () = default;	(4)	(C++11 起)
-类名 :: 类名 () = default;	(5)	(C++11 起)
+类名 (); (1) 
+类名 :: 类名 () 函数体 (2) 
+类名 () = delete; (3) (C++11 起)
+类名 () = default; (4) (C++11 起)
+类名 :: 类名 () = default; (5) (C++11 起)
 ```
 
 (1) 类定义中的默认构造函数的声明。
@@ -456,6 +475,7 @@ public:
 ##### 平凡默认构造函数
 
 如果满足下列所有条件，那么类 T 的默认构造函数是平凡的（即没有任何动作）：
+
 - 构造函数并非用户提供的（即它被隐式定义或在它的首个声明中预置的）
 - T 没有虚成员函数
 - T 没有虚基类
@@ -467,6 +487,7 @@ public:
 ##### 合格的默认构造函数
 
 满足下列所有条件的默认构造函数是合格的：
+
 - 它没有被弃置，且
 - 满足它的所有关联约束（如果存在），且
 - 没有比它更受约束的默认构造函数。
@@ -548,9 +569,9 @@ int main()
 类 `T` 的复制构造函数是首个形参是 `T&`、`const T&`、`volatile T&` 或 `const volatile T&`，而且要么没有其他形参，要么剩余形参均有默认值的非模板构造函数。
 
 ```shell
-类名 ( const 类名 & )	(1)	
-类名 ( const 类名 & ) = default;	(2)	(C++11 起)
-类名 ( const 类名 & ) = delete;	(3)	(C++11 起)
+类名 ( const 类名 & ) (1) 
+类名 ( const 类名 & ) = default; (2) (C++11 起)
+类名 ( const 类名 & ) = delete; (3) (C++11 起)
 ```
 
 (1) 复制构造函数的典型声明。
@@ -560,6 +581,7 @@ int main()
 ##### 隐式声明的复制构造函数
 
 如果没有为类类型（`struct`、`class` 或 `union`）提供任何用户定义的复制构造函数，那么编译器总是会声明一个复制构造函数作为这个类的非 `explicit` 的 inline public 成员。如果满足下列所有条件，那么这个隐式声明的复制构造函数拥有形式 `T::T(const T&)`：
+
 - T 的每个直接基类和虚基类 B 均拥有形参为 const B& 或 const volatile B& 的复制构造函数；
 - T 的每个类类型或类类型数组的非静态数据成员 M 均拥有形参为 const M& 或 const volatile M& 的复制构造函数。
 
@@ -570,6 +592,7 @@ int main()
 ##### 弃置的隐式声明的复制构造函数
 
 如果满足下列任一条件，那么类 T 的隐式声明的复制构造函数被定义为弃置的：(C++11 起)
+
 - T 拥有无法复制的非静态数据成员（拥有被弃置、不可访问或有歧义的复制构造函数）；
 - T 拥有无法复制的直接或虚基类（拥有被弃置、不可访问或有歧义的复制构造函数）；
 - T 拥有带被弃置或不可访问的析构函数的直接基类，虚基类或非静态数据成员；
@@ -580,6 +603,7 @@ int main()
 - 平凡的复制构造函数
 
 如果满足下列所有条件，那么类 T 的复制构造函数是平凡的：
+
 - 它不是用户提供的（即它是隐式定义或预置的）；
 - T 没有虚成员函数；
 - T 没有虚基类；
@@ -627,14 +651,16 @@ int main()
 #### 访问说明符
 
 在派生类声明的 基类说明符 中定义继承它后面的基类的成员的可访问性。
+
 ```c++
-public : 成员说明	(1)	
-protected : 成员说明	(2)	
-private : 成员说明	(3)	
-public 基类	(4)	
-protected 基类	(5)	
-private 基类	(6)	
+public : 成员说明 (1) 
+protected : 成员说明 (2) 
+private : 成员说明 (3) 
+public 基类 (4) 
+protected 基类 (5) 
+private 基类 (6) 
 ```
+
 1) 该访问说明符之后的各个成员具有公开成员访问
 2) 该访问说明符之后的各个成员具有受保护成员访问
 3) 该访问说明符之后的各个成员具有私有成员访问
@@ -646,7 +672,8 @@ private 基类	(6)
 派生类和基类属于`is-a`的关系，属于扩张类型
 - 受保护继承
 - 私有继承：类似于派生类的私有数据成员 `componenet`关系，私有继承用于：
-- - 派生类通过声明可访问基类公有成员函数， 这个`componenet`也可以做到：
+    - - 派生类通过声明可访问基类公有成员函数， 这个`componenet`也可以做到：
+
 ```c++
 class Base{
     public:
@@ -664,7 +691,9 @@ class Component {
   void get(){base_.size();}
 }
 ```
+
 - - 派生类成员函数内派生类对象的指针或引用可以转换为基类对象的指针或引用，这个`componenet`也可以实现。
+
 ```c++
 class Base{
 };
@@ -684,7 +713,9 @@ class Component{
   }
 }
 ```
+
 - - 对于基类只有方法没有数据，私有继承可以不占用派生类对象的尺寸，使用`componenet`会增大尺寸。
+
 ```c++
 #include <iostream>
 class Base {
@@ -705,13 +736,18 @@ int main() {
               << "component class size: " << sizeof(c) << std::endl;
 }
 ```
+
 可能输出：
+
 ```shell
 derived class size: 4
 component class size: 8
 ```
+
 类对象最小占有1字节，由于成员的对齐要求，占用了4字节。
+
 - - 虚函数调用的时候，这种`componenet`无法实现：
+
 ```c++
 #include <iostream>
 class Base{
@@ -731,13 +767,17 @@ int main() {
     d.h();
 }
 ```
+
 输出：
+
 ```shell
 Derived:func
 ```
+
 ##### 公开成员访问
 
 类的公开成员可以在任意位置访问。
+
 ```c++
 class S
 {
@@ -766,6 +806,7 @@ int main()
 
 1) 该类的成员和友元
 2) 派生自该类的任何类的成员，但仅在访问受保护成员所通过的对象的类是该派生类或该派生类的派生类时允许：
+
 ```c++
 struct Base
 {
@@ -799,7 +840,9 @@ void x(Base& b, Derived& d) // 非成员非友元
 //    ++d.i;                // 错误：非成员不能访问
 }
 ```
+
 组成指向受保护成员的指针时，必须在它的声明中使用派生类：
+
 ```c++
 struct Base
 {
@@ -820,6 +863,7 @@ struct Derived : Base
 ##### 私有成员访问
 
 类的私有成员仅对类的成员和友元可访问，无关乎成员在相同还是不同实例：
+
 ```c++
 class S
 {
@@ -832,7 +876,7 @@ public:
 ```
 
 ### Pimpl Idiom
- 
+
 `Pimpl`是`point to implementation`，c++通过将私有的部分包装成一个单独的类来限制外界的访问.一个'pimpl'就是一个用于隐藏类的私有指针成员。
 
 ```c++
@@ -944,7 +988,6 @@ void control::hide()
 - 每次构造和析构需要分配和释放内存;
 - 每次访问隐藏成员需要至少一次额外的重定向；
 - 不能用于protected成员和私有虚函数。
-
 
 ### 运行时多态-虚函数的虚指针和虚函数表
 
@@ -1147,7 +1190,7 @@ for(int i =0;i<3;++i)
 ```c++
 std::unique_ptr<int> pi(new int(42));
 if (pi) std::cout<<"not null"<<std::endl;
-``` 
+```
 
 ```c++
 std::vector<std::unique_ptr<foo>> data;
@@ -1188,7 +1231,9 @@ some_other_function(std::make_unique<foo>(),
 `std::shared_ptr`用于管理可共享的动态分配的对象或数组。
 
 使用方式：
+
 - 使用`shared_ptr`构造函数：
+
 ```c++
 std::shared_ptr<int> pnull1;
 std::shared_ptr<int> pnull2(nullptr);
@@ -1199,6 +1244,7 @@ std::shared_ptr<foo> pf2(new foo(42,42.0,"42"));
 ```
 
 - 使用`std::make_shared()`函数模板：
+
 ```c++
 std::shared_ptr<int> pi = std::make_shared<int>(42);
 std::shared_ptr<foo> pf1= std::make_shared<foo>();
@@ -1206,12 +1252,14 @@ std::shared_ptr<foo> pf2 = std::make_shared<foo>(42,42.0,"42");
 ```
 
 - 使用`std::make_shared_for_overwrite()`函数模板(c++20起)创建共享指针到对象或数组并默认初始化。
+
 ```c++
 std::shared_ptr<int> pi=std::make_shared_for_overwrite<int>();
 std::shared_ptr<foo[]> pa = std::make_shared_for_overwrite<foo[]>(3);
 ```
 
 - 使用重载构造函数并采用自定义删除器，如果默认删除操作不能准确的销毁管理的对象。
+
 ```c++
 std::shared_ptr<foo> pf1(new foo(42,42.0,"42"), foo_deleter());
 std::shared_ptr<foo> pf2(new foo(42,42.0,"42"), [](foo* p ){
@@ -1221,6 +1269,7 @@ std::shared_ptr<foo> pf2(new foo(42,42.0,"42"), [](foo* p ){
 ```
 
 - 管理对象数组总是需要自定义删除器。删除器可以是偏特化的std::default_delete或一个接受指针的函数：
+
 ```c++
 std::shared_ptr<int> pa1(new int[3]{1,2,3}, std::default_delete<int[]>());
 
@@ -1228,6 +1277,7 @@ std::shared_ptr<int> pa2(new int[3]{1,2,3}, [](auto p){delete [] p;});
 ```
 
 - 使用`get()`函数访问原始指针：
+
 ```c++
 void func(int* ptr)
 {
@@ -1245,6 +1295,7 @@ func(pi.get());
 ```
 
 - 使用`operator*`和`operator->`管理对象：
+
 ```c++
 std::shared_ptr<int> pi = std::make_shared<int>(42);
 *pi = 21;
@@ -1253,6 +1304,7 @@ pf->print();
 ```
 
 - 如果`shared_ptr`管理对象数组，`operator[]`可以被用于访问数组中的独立元素(c++17起)：
+
 ```c++
 std::shared_ptr<int[]> pa1(new int[3]{1,2,3}, std::default_delete<int[]>());
 
@@ -1261,6 +1313,7 @@ for(int i=0;i<3;++i>)
 ```
 
 - 检查指针是否管理对象可以使用`operator bool`或`get() != nullptr`：
+
 ```c++
 std::shared_ptr<int> pnull;
 if(pnull) std::cout<<"not null"<<std::endl;
@@ -1270,6 +1323,7 @@ if(pi) std::cout<<"not null"<<std::endl;
 ```
 
 - 使用`weak_ptr`维持一个共享对象的非拥有引用，后续可以使用`weak_ptr`获取`shared_ptr`对象：
+
 ```c++
 auto sp1=std::make_shared<int>(42);
 assert(sp1.use_count() == 1);
@@ -1740,7 +1794,9 @@ auto town_tester() {
 ##### 类型转换
 
 c++提供了几种类型安全的类型转化：`static_cast`，`dynamic_cast`，`const_cast`和`reinterpret_cast`。
+
 - 对非多态类型使用 `static_cast`执行类型转化；
+
 ```c++
 enum class options { one = 1, two, three };
 
@@ -1752,7 +1808,9 @@ double d = static_cast<double>(x) / y;
 
 int n = static_cast<int>(d);
 ```
+
 - 对多态类型的指针或引用使用`dynamic_cast`执行类型从基类到派生类或从派生类到基类的转化。运行时检查可以需要运行时类型信息(RTTI)。如果转换目标类型是指针且转换失败，转换的结果是一个目标类型的空指针。如果转换目标类型是引用且转换失败，将抛出`std::bad_cast`异常，所以对于目标是引用的转换需要使用`try...catch`块。
+
 ```c++
 struct base
 {
@@ -2172,7 +2230,9 @@ public:
 #### 使用类模板实参推断简化代码
 
 在以下情况c++17实例化一个类模板，可以省略指定模板实参，并让编译器从初始化器的类型推导缺失的模板实参：
+
 - 声明变量或变量模板初始化，其中声明的类型是要推导实参的模板(可有cv限定):
+
 ```c++
 std::pair p{42,"demo"};  // deduces as std::pair<int, char const*> p{42,"demo"};
 std::vector v{1,2}; // deduces as std::vector<int> v{1,2};
@@ -2195,6 +2255,7 @@ auto f = new foo(42); //分配的类型是 A<int>
 ```
 
 - 执行类函数转化表达式：
+
 ```c++
 std::mutex mx;
 
@@ -2209,6 +2270,7 @@ std::for_each(v.begin(), v.end(), Foo([&](int i){...})) //推导出 Foo<T>，其
 ```
 
 - 非类型模板参数类型(c++20)：
+
 ```c++
 template<class T>
 struct X
@@ -2223,7 +2285,6 @@ struct Y {};
 
 Y<0> y;  //推断为 Y<X<int>(0)>
 ```
-
 
 #### 可变参数模板
 
@@ -2285,11 +2346,12 @@ auto t2 = make_even_tuple(1, 2, 3);
 ##### 使用折叠表达式(fold expression)简化可变参数函数模板
 
 折叠表达式是以二元运算符对形参包进行规约(折叠)。
+
 ```c++
-( pack op ... )	/* 一元右折叠 */
-( ... op pack )	/* 一元左折叠 */
-( pack op ... op init )	/* 二元右折叠 */
-( init op ... op pack )	/* 二元左折叠 */
+( pack op ... ) /* 一元右折叠 */
+( ... op pack ) /* 一元左折叠 */
+( pack op ... op init ) /* 二元右折叠 */
+( init op ... op pack ) /* 二元左折叠 */
 ```
 
 `op`:二元运算符：`+ - * / % ^ & | = < > << >> += -= *= /= %= ^= &= |= <<= >>= == != <= >= && || , .* ->*`
@@ -2337,6 +2399,7 @@ auto add_to_one(Ts...args)
 使用二元折叠要保证两侧的运算符`op`相同。
 
 示例：
+
 ```c++
 template <typename T>
 struct wrapper
@@ -2358,7 +2421,9 @@ constexpr auto min(Ts&&... args)
 }
 auto m = min(3, 1, 2); // m = 1
 ```
+
 上面的示例中`min()`函数被编译器展开类似如下：
+
 ```c++
 template<>
 inline constexpr int min<int, int, int>(int && __args0,
@@ -2538,8 +2603,8 @@ int i0 = f<X>(0);
 ```
 
 - 尝试执行无效转换于：
-- - 模板实参表达式
-- - 用于函数声明的表达式。
+    - - 模板实参表达式
+    - - 用于函数声明的表达式。
 
 ```c++
 template<class T, T*>int f(int);
@@ -2661,7 +2726,9 @@ Catch-all overload called
 ```
 
 ##### static_assert和std::enable_if区别
+
 `static_assert`和`std::enable_if`都可以限制函数参数的类型，但是两者也有着不同：
+
 ```c++
 template <typename T>
 auto compute(T const a, T const b)
@@ -2682,7 +2749,9 @@ auto v1 = compute(1, 2);
 auto v2 = compute(1.0, 2.0);
 // error: ambiguous call to overloaded function
 ```
+
 上面的示例出现错误是因为编译器首先发现两个重载似乎都有可能调用，这是因为`static_assert`是在重载解析完成后才生效。导致重载集出现两个候选，且无法进一步选择。
+
 ```c++
 template <typename Test, typename T = void>
 using EnableIf = typename std::enable_if_t<Test::value, T>;
@@ -3835,6 +3904,7 @@ auto l = [lptr=std::move(ptr)](){return ++*lptr;}; /* lptr为lambda中新定义�
 捕获类成员方式：
 
 - 捕获单个成员使用`[x=expr]`:
+
 ```c++
 struct foo
 {
@@ -3847,7 +3917,9 @@ struct foo
     }
 };
 ```
+
 - 按值捕获整个对象使用`[=]`(注意隐式捕获`*this`在c++20被弃用)，引用捕获整个对象使用`[&]`，且能隐式捕获当前对象(`*this`)：
+
 ```c++
 struct foo
 {
@@ -3859,11 +3931,11 @@ struct foo
  }
 };
 ```
+
 - 捕获整个对象使用`[this]`和`[*this]`。这在需要调用类的方法是必要的。`[this]`是指针按值捕获，且是对当前对象的引用捕获，`[*this]`是对象自身按值捕获。在捕获发生后对象超出作用域且在lambda调用前这两者有明显区别。
 
 **悬垂引用**
 如果以引用隐式或显式捕获非引用实体，而在该实体的生存期结束之后调用闭包对象的函数调用运算符或运算符模板特化，那么会发生未定义行为。C++ 的闭包并不延长以引用捕获的对象的生存期。这同样适用于由 `this` 捕获对当前 `*this` 对象。
-
 
 所有的lambda函数都有自己的类型，就算内容完全一致，所有不能将一个lambda函数赋于另一个lambda函数，需要使用std::function绑定
 
@@ -3879,9 +3951,12 @@ auto func=std::function<void(int)>{[](int v){std::cout<<v;}}
 `std::function`比lambda的执行时的代码多，所以会略慢一些。
 
 #### 泛化和模板lambda
+
 泛化lambda可以写成：
+
 - lambda表达式中形参使用`auto`标识符代替实际类型；
 - 使用时用不同的实参填入。
+
 ```c++
 auto v=3;
 auto lambda = [&](auto v1,auto v2){return v+v1*v2;}
@@ -3920,6 +3995,7 @@ auto res_float = lambda_float(1.0f, 2.0f)
 ```
 
 c++20起，可以实现模板lambda：
+
 - 在捕获区域后使用模板形参列表(如`<typename T>`);
 - 将泛化lambda限制为指定的类型；
 - 在泛化lambda执行完美转发。
@@ -3935,7 +4011,9 @@ auto tl=[]<typename T>(const std::vector<T>& vec)
 tl(vi); //打印5
 tl(42); //错误
 ```
+
 模板lambda转化为类如下：
+
 ```c++
 struct __lambda_name__
 {
@@ -3949,6 +4027,7 @@ struct __lambda_name__
 ```
 
 在泛化lambda中实现完美转发，需要使用`decltype`来决定参数的类型：
+
 ```c++
 template<typename T>
 void foo(T&& ...args)
@@ -3963,7 +4042,9 @@ auto tl=[](auto&& ...args)
 
 tl(1,42.9,"lambda");
 ```
+
 在模板lambda中，可以使用更简单的方式：
+
 ```c++
 auto tl=[]<typename T>(T&&...args)
 {
@@ -3974,6 +4055,7 @@ auto tl=[]<typename T>(T&&...args)
 #### 递归lambda
 
 递归lambda函数需要：
+
 - 在函数域内定义lambda，因为lambda只能捕获函数域内的变量，不能捕获任何静态存储的变量；
 - 将lambda赋于`std::function`包装器，而不是auto标识符，因为变量类型在初始化处理的过程中未知，所以必须指定lambda闭包的类型；
 - 在lambda表达式中按引用捕获`std::function`对象，用于递归调用。如果使用按值捕获，将产生一个函数包装器拷贝，但是捕获的时候包装器并没有初始化，将导致拷贝的函数包装器无法调用，在触发调用时，会抛出`std::bad_function_call`。
@@ -4890,11 +4972,13 @@ i = 4, j = 9
 
 绑定指定名称到初始化器的子对象或元素。
 类似引用，结构化绑定是既存对象的别名。不同于引用的是，结构化绑定的类型不必为引用类型。
+
 ```
-attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ] = expression ;	(1)	
-attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ]{ expression };	(2)	
-attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ]( expression );	(3)	
+attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ] = expression ; (1) 
+attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ]{ expression }; (2) 
+attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ]( expression ); (3) 
 ```
+
 `attr` - 任意数量的属性的序列
 `cv-auto` - 可有 `cv` 限定的 `auto` 类型说明符，也可以包含存储类说明符 `static` 或 `thread_local`；在 `cv` 限定符中包含 `volatile` 是被弃用的 (C++20 起)
 `ref-qualifier` - & 或 && 之一
@@ -4902,11 +4986,13 @@ attr(optional) cv-auto ref-qualifier(optional) [ identifier-list ]( expression )
 `expression` - 顶层没有逗号运算符的表达式（文法上为赋值表达式），且具有数组或非联合类之一的类型。如果 表达式 涉及任何来自 标识符列表 的名字，那么声明非良构。
 
 结构化绑定声明首先引入一个唯一命名的变量（此处以 e 指代）来保有其初始化器的值，方式如下：
+
 - 如果 表达式 具有数组类型 A 且不存在 引用运算符，那么 e 具有类型 cv A，其中 cv 是 cv-auto 序列中的 cv 限定符，且 e 中的各个元素从 表达式 的对应元素进行复制（对于 (1)）或直接（对于 (2,3)）初始化。
 - 否则 e 如同于声明中以其名取代 [ 标识符列表 ] 一般定义。
 
 我们用 E 代表表达式 e 的类型。（换言之，E 等价于 `std::remove_reference_t<decltype((e))>`）。
 然后，结构化绑定可以以下三种方式之一进行绑定，取决于 E：
+
 - 如果 E 是数组类型，那么绑定各个名字到各个数组元素。
 - 果 E 是非联合类类型且 `std::tuple_size<E>` 是完整类型并拥有名为 `value` 的成员（无关乎这种成员的类型或可访问性），那么使用“元组式”绑定协议。
 - 如果 E 是非联合类类型但 `std::tuple_size<E>` 不是完整类型，那么绑定各个名字到 E 的各个可访问数据成员。
@@ -4954,13 +5040,16 @@ C auto [x,y]=std::pair{1,2}; // 错误：受约束
 ```
 
 如果存在 引用运算符 且 表达式 为纯右值，那么应用将引用绑定到临时量的通常规则（包括生存期延续）。这些情况下，隐藏变量 e 是绑定到从纯右值表达式实质化的临时变量，并延长其生存期的一个引用。与之前一样，如果 e 是非 const 左值引用，那么绑定失败：
+
 ```c++
 int a = 1;
 const auto& [x] = std::make_tuple(a); // OK，非悬垂引用
 auto&       [y] = std::make_tuple(a); // 错误，不能绑定 auto& 到右值 std::tuple
 auto&&      [z] = std::make_tuple(a); // 同样 OK
 ```
+
 decltype(x) 指名结构化绑定的被引用类型，其中 x 代表一个结构化绑定。在元组式的情况下，它是 std::tuple_element 所返回的类型，它可以不是引用，即使在此情况下始终会引入隐藏的引用。这相当于模拟了绑定到其各个非静态数据成员具有 tuple_element 所返回的类型的结构体的行为，而绑定自身的引用性质则只是实现细节。
+
 ```c++
 std::tuple<int, int&> f();
  
@@ -4970,7 +5059,9 @@ auto [x, y] = f();       // decltype(x) 是 int
 const auto [z, w] = f(); // decltype(z) 是 const int
                          // decltype(w) 是 int&
 ```
+
 lambda 表达式不能捕获结构化绑定(c++20前)：
+
 ```c++
 #include <cassert>
  
@@ -4984,6 +5075,7 @@ int main()
 ```
 
 示例：
+
 ```c++
 #include <iomanip>
 #include <iostream>
@@ -5100,7 +5192,9 @@ int main(int argc, char** argv)
   std::cout<<a<<std::endl;   // prints 4
 }
 ```
+
 中止多个线程
+
 ```c++
 int main(int argc, char** argv)
 {
@@ -5119,7 +5213,9 @@ int main(int argc, char** argv)
   std::cout<<a<<' '<<b<<std::endl;   // prints 4 and 14
 }
 ```
+
 中止时触发回调
+
 ```c++
 int main() {
   int a = 0;
@@ -5138,6 +5234,7 @@ int main() {
   std::cout << a << std::endl; // prints 4 and 14
 }
 ```
+
 #### 互斥Mutex
 
 互斥限制了多线程下对共享资源的同时访问，防止了数据竞速并使线程保证同步。
@@ -5285,11 +5382,13 @@ struct atomic<std::weak_ptr<U>>; //since c++20
 `std::atomic`不可拷贝和移动。
 
 #### 其他线程同步机制
+
 互斥在某些场景下可能会耗费巨大，因此c++20标准特性新提供了一些简单的同步机制：`latches`，`barries`，`semaphores`。
 
 ##### std::latch
 
 - `std::latch`是 std::ptrdiff_t 类型的向下减少计数器，做为单次使用的屏障，能用于同步线程。在创建时初始化计数器的值。线程可能在 latch 上阻塞直至计数器减少到零。
+
 ```c++
 #include <concepts>
 #include <iostream>
@@ -5335,12 +5434,14 @@ int main() {
 屏障对象的生存期由屏障阶段的序列组成。每个阶段定义一个阶段同步点。在阶段中到达屏障的线程能通过调用 wait 在阶段同步点上阻塞，而且将保持阻塞直至运行阶段完成步骤。
 
 屏障阶段由以下步骤组成：
+
 - 每次调用 `arrive` 或 `arrive_and_drop` 减少期待计数。
 - 期待计数抵达零时，运行阶段完成步骤。完成步骤调用完成函数对象，并除阻所有在阶段同步点上阻塞的线程。完成步骤的结束**强先发生于**所有从完成步骤所除阻的调用的返回。
-- - 对于特化 `std::barrier<>` （使用默认模板实参），完成步骤作为对 `arrive` 或 `arrive_and_drop` 的导致期待计数抵达零的调用的一部分运行。
-- - 对于其他特化，完成步骤在该阶段期间到达屏障的线程之一上运行。而若在完成步骤中调用屏障对象的 `wait` 以外的成员函数，则行为未定义。
-- - 完成步骤结束时，重置期待计数为构造中指定的值，可能为 arrive_and_drop 调用所调整，并开始下一阶段。
+    - - 对于特化 `std::barrier<>` （使用默认模板实参），完成步骤作为对 `arrive` 或 `arrive_and_drop` 的导致期待计数抵达零的调用的一部分运行。
+    - - 对于其他特化，完成步骤在该阶段期间到达屏障的线程之一上运行。而若在完成步骤中调用屏障对象的 `wait` 以外的成员函数，则行为未定义。
+    - - 完成步骤结束时，重置期待计数为构造中指定的值，可能为 arrive_and_drop 调用所调整，并开始下一阶段。
 同时调用 barrier 的成员函数，除了析构函数，不引入数据竞争。
+
 ```c++
 #include <barrier>
 #include <iostream>
@@ -5382,7 +5483,9 @@ int main() {
   }
 }
 ```
+
 输出：
+
 ```shell
 Starting...
   anil worked
@@ -5401,16 +5504,18 @@ Cleaning up...
 ```c++
 template<std::ptrdiff_t LeastMaxValue = /* implementation-defined */>
 class counting_semaphore;
-// (1)	(C++20 起)
+// (1) (C++20 起)
 using binary_semaphore = std::counting_semaphore<1>;
-// (2)	(C++20 起)
+// (2) (C++20 起)
 ```
+
 (1) `counting_semaphore` 是一个轻量同步元件，能控制对共享资源的访问。不同于 `std::mutex` 、 `counting_semaphore` 允许同一资源有多于一个同时访问，至少允许 `LeastMaxValue` 个同时的访问者若 `LeastMaxValue` 为负则程序为谬构。
 (2) `binary_semaphore` 是 `std::counting_semaphore` 的特化的别名，其 `LeastMaxValue` 为 1 。实现可能将 `binary_semaphore` 实现得比 `std::counting_semaphore` 的默认实现更高效。
 `counting_semaphore` 含有由构造函数初始化的内部计数器。由调用 `acquire()` 与相关方法减少此计数器，而它通过调用 `release()` 增加。计数器为零时， `acquire()` 阻塞该计数器直至它增加，但 `try_acquire()` 不阻塞； `try_acquire_for()` 与 `try_acquire_until()` 阻塞直至计数器增加或到达时限。
 类似 `std::condition_variable` 的 `wait()` ， `counting_semaphore` 的 `try_acquire()` 可能虚假地失败。
 
 信号量亦常用于发信/提醒而非互斥，通过初始化该信号量为 ​0​ 从而阻塞尝试 `acquire()` 的接收者，直至提醒者通过调用 `release(n)` “发信”。在此方面可把信号量当作 `std::condition_variable` 的替用品，通常它有更好的性能。
+
 ```c++
 #include <iostream>
 #include <semaphore>
@@ -6511,11 +6616,13 @@ for (auto &&[rate, flag] : getRates2())
 ```
 
 #### 在自定义类型上使用范围for循环
+
 为了在自定义类型上使用范围for循环，需要：
+
 - 创建类型的可变和常量迭代器，并实现以下运算符：
-- - `operator++`用于迭代器递进
-- - `operator*`用于解引用迭代器并访问迭代器指向的实际元素
-- - `operator!=`和另一个迭代器比较是否相等
+    - - `operator++`用于迭代器递进
+    - - `operator*`用于解引用迭代器并访问迭代器指向的实际元素
+    - - `operator!=`和另一个迭代器比较是否相等
 - 提供类型的`begin()`和`end()`函数。
 
 ```c++
@@ -6627,7 +6734,9 @@ void print_dummy_array(dummy_array<T, Size> const & arr)
 `fold`是高序函数，将一个结合函数应用到一个范围中的元素并返回一个单独结果。函数通常有两个版本，`foldleft`从左到右处理元素，`foldright`从右到左处理元素。
 
 实现映射需要：
+
 - 在支持迭代和赋值到元素的`range`上使用`std::transform`:
+
 ```c++
 template<typename F, typename R>
 R mapf(F&& func, R range)
@@ -6636,7 +6745,9 @@ R mapf(F&& func, R range)
   return range;
 }
 ```
+
 - 对不支持赋值到元素的`range`使用其他方法如显式迭代并插入值：
+
 ```c++
 template<typename F, typename T, typename U>
 std::map<T,U> mapf(F&& func, const std::map<T,U>& m)
@@ -6661,7 +6772,9 @@ std::queue<T> mapf(F&& func, std::queue<T> q)
 ```
 
 实现折叠需要：
+
 - 对支持迭代的容器使用`std::accumulate()`：
+
 ```c++
 template <typename F, typename R, typename T>
 constexpr T foldl(F &&func, R &&range, T init) {
@@ -6680,7 +6793,9 @@ constexpr T foldr(F&& func, R&& range, T init)
                           std::forward<F>(func));
 }
 ```
+
 - 对不支持迭代容器使用其他方式：
+
 ```c++
 template <typename F, typename T>
 constexpr T foldl(F &&func, std::queue<T> q, T init) {
@@ -6693,6 +6808,7 @@ constexpr T foldl(F &&func, std::queue<T> q, T init) {
 ```
 
 映射示例：
+
 ```c++
 auto vnums =
  std::vector<int>{0, 2, -3, 5, -1, 6, 8, -4, 9};
@@ -6740,6 +6856,7 @@ auto p = funclib::mapf(
 ```
 
 折叠示例：
+
 ```c++
 auto vnums =
  std::vector<int>{0, 2, -3, 5, -1, 6, 8, -4, 9};
@@ -6782,7 +6899,9 @@ auto count = funclib::foldl(
 #### 组合函数到高序函数
 
 组合函数是指将两个或更多的函数组成一个新的函数：
+
 - 组合两个函数f和g需要提供一个函数接受两个函数作为参数并返回一个新的函数(lambda)返回f(g(x)) ，x是组合的函数的参数：
+
 ```c++
 template<typename F, typename G>
 auto compose(F&& f, G&& g)
@@ -6794,7 +6913,9 @@ auto v = compose(
     [](const int n){return std::to_string(n);},
     [](const int n){return n*n;};)(-3); /* v=="9" */
 ```
+
 - 组合不定数量函数，提供一个可变数量模板函数重载：
+
 ```c++
 template<typename F, typename ... R>
 auto compose(F&& f, R&& ... r)
@@ -6817,6 +6938,7 @@ auto s=compose(
 ```
 
 组合通常可以使用*代替，所有通过重载`operator*`可以简化:
+
 ```c++
 template<typename F, typename G>
 auto opertor*(F&& f, G&& g)
@@ -6847,8 +6969,10 @@ auto s = c(vnums); // s = 76
 ```
 
 ### 对任意可调用对象统一触发方式
+
 c++17定义了一个标准函数名为`std::invoke()`可以使用提供的参数触发任意可调用对象。这个不是为了代替直接函数或函数对象调用，但是在模板元编程实现不同的库函数时有用。
 `std::invoke()`是一个可变参数函数模板，接受可调用对象作为第一个参数，一个变量参数列表用于传递给调用：
+
 ```c++
 int add(const int a, const int b)
 {
@@ -6884,6 +7008,7 @@ auto a=std::invoke(l,1,2); /* a=3 */
 ```
 
 实际上`std::invoke()`应该被用到模板元编程用于触发可变参数的函数。如下所示：
+
 ```c++
 namespace details
 {
@@ -6908,7 +7033,9 @@ auto apply(F&& f, T&& t)
 ### 向编译器的属性提供元数据  
 
 使用标准属性向编译器提供了提示关于不同的设计目标，例如：
+
 - 为了确保函数的返回值不被忽视，声明函数伴随者`[[nodiscard]]`属性。c++20可以使用`[[nodiscar(text)]]`形式添加字符串字面值来解释为什么不能被弃用：
+
 ```c++
 [[nodiscard]] int get_value1()
 {
@@ -6919,7 +7046,9 @@ get_value1();
 // warning: ignoring return value of function
 //          declared with 'nodiscard' attribute get_value1(
 ```
+
 - 或者可以声明伴随`[[nodiscard]]`属性的枚举和类作为返回值：
+
 ```c++
 enum class[[nodiscard]] ReturnCodes{Ok, NoData, Error};
 
@@ -6968,6 +7097,7 @@ double run([[maybe_unused]] int a, double b)
 ```
 
 - 为了编译器不会警告并使switch语句刻意fallthrough case标签，使用`[[fallthrough]]`属性：
+
 ```c++
 void option1() {}
 void option2() {}
@@ -7005,6 +7135,7 @@ void execute_command(char cmd)
 多个属性可以声明如`[[attr1,attr2,attr3]]`。
 属性可以有参数，如`[[mode(greedy)]]` `[[sys::hidden]]` `[[using sys::visibility(hidden), debug]]`。
 属性可以出现在实体名的前或后位置：
+
 ```c++
 // attr1 applies to a, attr2 applies to b
 int a [[attr1]], b [[attr2]];
@@ -7015,7 +7146,9 @@ int [[attr1]] a [[attr2]], b
 ```
 
 ### 实现并行映射map和折叠fold函数
+
 使用线程实现:
+
 ```c++
 #include <algorithm>
 #include <cassert>
@@ -7163,6 +7296,7 @@ int main(int argc, char **argv) {
 ```
 
 可能的输出
+
 ```shell
 size   s map   p map  s fold  p fold
    10000      11      10       7      10
@@ -7177,6 +7311,7 @@ size   s map   p map  s fold  p fold
 ```
 
 使用任务实现(任务是线程执行并行计算的高层次替代)，`std::async()`可以异步的执行函数而不用处理低层次的线程细节，映射和折叠任务如下：
+
 ```c++
 template <typename Iter, typename F>
 void parallel_map(Iter begin, Iter end, F &&f) {
@@ -7233,7 +7368,9 @@ auto parallel_reduce(Iter begin, Iter end, R init, F op) {
   }
 }
 ```
+
 其他代码保持不变，可能的结果：
+
 ```shell
 size   s map   p map  s fold  p fold
    10000      11      11      11      11
@@ -7248,6 +7385,7 @@ size   s map   p map  s fold  p fold
 ```
 
 c++17提供了标准的用于并行的通用算法。映射和折叠实现如下：
+
 ```c++
 template <typename Iter, typename F>
 void parallel_map(Iter begin, Iter end, F f) {
@@ -7262,6 +7400,7 @@ auto parallel_reduce(Iter begin, Iter end, R init, F op) {
 ```
 
 c++17提供了标准算法`std::transform_reduce()`用于将两个运算符组合到一个函数调用中。
+
 ```c++
 std::vector<int> v(size);
 std::iota(std::begin(v), std::end(v), 1);
@@ -7287,6 +7426,7 @@ auto sump = std::transform_reduce(
 #### 强制的复制/移动操作消除
 
 以下情况要求编译器省略类对象的复制和移动构造，即使复制/移动构造函数和析构函数拥有可观察的副作用。这些对象将直接构造到它们本来要复制/移动到的存储中。复制/移动构造函数不必存在或可访问：
+
 - 在返回语句中，当操作数是一个与函数返回类型相同的类类型的纯右值(忽略cv限定)时：
 
 ```c++
@@ -7299,6 +7439,7 @@ f(); // 只调用一次 T 的默认构造函数
 ```
 
 返回类型的析构函数必须在 return 语句位置可访问且未被删除，即使没有 T 对象要被销毁。
+
 - 在对象的初始化中，当初始化器表达式是一个与变量类型相同的类类型的纯右值(忽略cv限定)时(c++17起)：
 
 ```c++
@@ -7321,7 +7462,9 @@ struct D:C
 ```
 
 #### 非强制的复制/移动 (C++11 起)操作消除
+
 下列环境下，允许但不要求编译器省略类对象的复制和移动 (C++11 起)构造，即使复制/移动 (C++11 起)构造函数和析构函数拥有可观察的副作用。这些对象将直接构造到它们本来要复制/移动到的存储中。这是一项优化：即使进行了优化而不调用复制/移动 (C++11 起)构造函数，它仍然必须存在且可访问（如同完全未发生优化），否则程序非良构：
+
 - `return` 语句中，当操作数是拥有自动存储期的非 `volatile` 对象的名字，该名字不是函数形参或 `catch` 子句形参，且其具有与函数返回类型相同的类类型（忽略 `cv` 限定）时。这种复制消除的变体被称为 `NRVO`，“具名返回值优化 (named return value optimization)”。
 - 在对象的初始化中，当源对象是无名临时量(将亡值？)且与目标对象具有相同类型（忽略 `cv` 限定）时。当无名临时量为 `return` 语句的操作数时，称这种复制消除的变体为 `RVO`，“返回值优化 (return value optimization)”。 (c++17前)
 返回值优化是强制要求的，而不再被当做复制消除；见上文。(c++17起)
@@ -7329,7 +7472,9 @@ struct D:C
 
 进行复制消除时，实现将被省略的复制/移动 (C++11 起)操作的源和目标单纯地当做指代同一对象的两种不同方式，而该对象将在假如不进行优化时两个对象中后被销毁的对象销毁时销毁（但如果被选择的构造函数的形参是对象类型的右值引用，那么该销毁发生于目标对象本应被销毁时） (C++11 起)。
 可以连锁多次复制消除，以消除多次复制。
+
 - 在常量表达式和常量初始化中，保证进行返回值优化（RVO），但禁止具名返回值优化（NRVO）：
+
 ```c++
 struct A
 {
@@ -7406,7 +7551,7 @@ int main() {
 }
 ```
 
-###  奇特的递归模板模式(CRTP)实现静态多态
+### 奇特的递归模板模式(CRTP)实现静态多态
 
 CRTP(curiously recurring template pattern)允许派生类重载(overload)基类的函数实现多态。这种多态和运行时多态不同，属于编译时多态。
 使用CRTP的好处是减少对象内存尺寸，相比虚函数多态的对象少了虚指针，并加快了运行速度(不需要虚指针和虚函数表跳转)。需要注意的是类模板的析构函数还是需要设置为virtual，以便准确的析构。
@@ -7426,6 +7571,7 @@ class D :public B<D>
   void f(int i) {i_+=i;}
 };
 ```
+
 现在调用`B::f()`，将在内部调用实际派生类的方法，就像是一个虚函数调用一样。
 
 ```c++
