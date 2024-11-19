@@ -18,6 +18,7 @@
   - [禁用包注册](#禁用包注册)
   - [包注册实例：](#包注册实例)
   - [包注册表所有权](#包注册表所有权)
+  - [显示包查找过程](#显示包查找过程)
 
 <!-- /code_chunk_output -->
 # 引言
@@ -333,3 +334,16 @@ find_package(MyPackage)
 ## 包注册表所有权
 包注册表项由它们引用的项目安装单独拥有。 包安装程序负责添加自己的条目，相应的卸载程序负责删除它。
 export(PACKAGE) 命令使用项目构建树的位置填充用户包注册表。 构建树往往会被开发人员删除，并且没有可能触发删除其条目的“卸载”事件。 为了保持注册表清洁，如果 find_package() 命令具有足够的权限，它会自动删除它遇到的陈旧条目。 一旦调用 export(PACKAGE)，CMake 不提供删除引用现有构建树的条目的接口。 但是，如果项目从构建树中删除其包配置文件，则引用该位置的条目将被视为陈旧。
+
+## 显示包查找过程
+
+如下ndk交叉编译spdlog,配置的过程查找fmt包
+
+```powershell
+cmake --no-warn-unused-cli -DSPDLOG_FMT_EXTERNAL=ON -DANDROID_STL=c++_shared -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_SHARED=OFF -DSPDLOG_USE_STD_FORMAT=OFF -DSPDLOG_FMT_EXTERNAL_HO=OFF -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=26 -DANDROID_USE_LEGACY_TOOLCHAIN_FILE=FALSE -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_TOOLCHAIN_FILE:FILEPATH=D:/android-ndk-r26b/build/cmake/android.toolchain.cmake -SD:/Code/OtherProject/cxx/spdlog -Bd:/Code/OtherProject/cxx/spdlog/cmakebuild -G Ninja --debug-find-pkg=fmt
+```
+需要注意，交叉编译需要设置下面的`fmt_DIR`用于库路径查看
+```cmake
+cmake_policy(SET CMP0074 NEW)
+set(fmt_DIR "F:/packages/f/fmt/10.2.1/7def98216fe149a88a59c825d35870c7/lib/cmake/fmt")
+```
