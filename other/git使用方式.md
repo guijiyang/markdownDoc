@@ -35,25 +35,19 @@ git commit -m "描述信息"
 
 ## 远程仓库
 
-**关联远程仓库**
+_关联远程仓库_
 
 ```shell
 git remote add <RemoteStorageLocalName> <RemoteStorageURL>
 ```
 
-**获取远程仓库上主分支的内容**
+_获取远程仓库上分支的内容_
 
 ```shell
-git pull <RemoteStorageLocalName> master
+git pull <RemoteStorageLocalName> <BranchName>
 ```
 
-**将当前分支`<BranchName>`设置为远程仓库的 master 分支**
-
-```shell
-git branch --set-upstream-to=<RemoteStorageLocalName>/master <BranchName>
-```
-
-**推送到远程仓库**
+_将本地分支推送到远程仓库_
 
 ```shell
 git push <RemoteStorageLocalName> <BranchName>
@@ -79,6 +73,7 @@ git submodule foreach git pull origin master
 ```
 
 ## 分支
+
 ```shell
 # 显示本地分支列表
 git branch
@@ -99,10 +94,13 @@ git switch -c <BranchName>
 ```
 
 _删除本地分支并同步远程仓库的分支_
-首先需要切换到其他分支
 
 ```shell
+# 首先需要切换到其他分支
+git branch <OtherBranchName>
+# 删除本地分支
 git branch --delete(-d) <BranchName>
+# 同步删除远程分支
 git push <RemoteStorageLocalName> --delete(-d) <BranchName>
 ```
 
@@ -110,21 +108,20 @@ _切换或创建分支_
 
 ```shell
 # 创建并切换到一个本地分支，同时将其跟踪到一个远程分支
-git checkout --track(-t) remotes/<RemoteStorageLocalName>/<BranchName>
+git switch -c <BranchName> --track(-t) remotes/<RemoteStorageLocalName>/<BranchName>
 # or
 git switch -t remotes/<RemoteStorageLocalName>/<BranchName>
+
 # 切换(创建)本地分支
-git checkout <BranchName> 
-# or 
 git switch <BranchName>
 ```
 
 _关联远程分支_
 
 ```shell
-git branch --set-upstream-to=<RemoteStorageLocalName>/<BranchName> <BranchName>
+git branch --set-upstream-to=<RemoteStorageLocalName>/<RemoteBranchName> <BranchName>
 # or
-git branch -u <RemoteStorageLocalName>/<BranchName> <BranchName>
+git branch -u <RemoteStorageLocalName>/<RemoteBranchName> <BranchName>
 ```
 
 _合并分支_
@@ -146,10 +143,12 @@ git branch -vv
 ```shell
 # 本地修改最后一次提交
 # 覆盖最近一次修改内容
-git commit (-a) --ammend 
+git commit --amend(-a)  
 or
 git reset --soft HEAD^ #移动HEAD指针到上一个版本，但不改变暂存区和工作区
-git commit -c ORIG_HEAD #使用上一次commit的message
+git commit -C ORIG_HEAD #使用上一次commit的message
+# or
+git commit -c ORIG_HEAD #修改并使用上一次commit的message
 #覆盖最近一次修改的log
 git commit --amend -m <NewCommitMessage> 
 #覆盖远程前一次提交
@@ -164,7 +163,7 @@ git push <RemoteStorageLocalName> <BranchName> --force
 # 先用下面命令找到要回退的版本的commit id：
 git reflog
 # 接着回退版本:
-git reset --hard <CommitId> #注意使用hard会将HEAD，暂存区和工作区都回退到指定版本，如果想保留工作区的修改，可以使用soft或mixed参数
+git reset --hard <CommitId> #注意使用hard会将HEAD，暂存区和工作区都回退到指定版本，如果想保留这些修改，可以使用soft或mixed参数
 # 如果你的错误提交已经推送到自己的远程分支了，那么就需要回滚远程分支了。
 # 强制推送到远程分支：
 git push -f <RemoteStorageLocalName>
