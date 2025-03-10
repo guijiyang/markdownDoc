@@ -155,6 +155,19 @@ git commit --amend -m <NewCommitMessage>
 git push <RemoteStorageLocalName> <BranchName> --force 
 ```
 
+## 撤销暂存区的提交
+
+```shell
+# 重置单个文件：
+git reset <FileName>
+# 重置所有文件：
+git reset
+# 重置单个文件：
+git restore --staged <FileName>
+# 重置所有文件：
+git restore --staged .
+```
+
 ## 版本回退
 
 - 私有库版本回退
