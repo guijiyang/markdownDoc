@@ -1,2 +1,4 @@
-data,highOverThanThreeOpenNumber,highLimit,highlimitOnce,highlimitRate
-2025/4/17,30,11,0,36.67
+Data,Open_High_Over_Than_Three_Number,Total_Increase_limit,Total_Increase_limit_First,Total_Increase_limit_Once,Total_Increase_limit_Once_first,Total_Increase_limit_Rate,All_limit_Rate,All_A_SZ_Index_Increase
+2025/4/17,30,11,-,0,0,36.67,36.67,0.59
+2025/4/18,50,7,1,9,5,14.00,32.00,-0.20
+2025/4/21,58,16,6,2,2,27.00,31.03,1.75
