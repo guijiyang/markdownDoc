@@ -1,4 +1,4 @@
-Data,Total_Number,Total_Increase_limit,Total_Increase_limit_Rate,All_A_SZ_Index_Increase
+Data,Match_Strategy_Number,Increase_limit_Number,Increase_limit_Rate,All_A_SZ_Index_Increase
 2025/4/18,137,46,33.58,-0.20
 2025/4/21,258,80,31.01,1.75
 2025/4/22,157,69,43.94,0.17
@@ -8,3 +8,4 @@ Data,Total_Number,Total_Increase_limit,Total_Increase_limit_Rate,All_A_SZ_Index_
 2025/4/28,84,32,38.10,-1.29
 2025/4/29,149,52,34.90,0.82
 2025/4/30,155,61,39.35,0.88
+2025/5/6,162,57,35.19,2.72

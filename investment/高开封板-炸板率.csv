@@ -1,4 +1,4 @@
-Data,Open_High_Over_Than_Three_Number,Total_Increase_limit,Total_Increase_limit_First,Total_Increase_limit_Once,Total_Increase_limit_Once_first,Total_Increase_limit_Rate,All_limit_Rate,All_A_SZ_Index_Increase
+Data,Match_Strategy_Number,Increase_limit_Number,Increase_limit_First_Number,Increase_limit_Once_Number,Increase_limit_Once_first_Number,Increase_limit_Rate,Increase_limit_And_Once_Rate,All_A_SZ_Index_Increase
 2025/4/17,30,11,-,-,-,36.67,36.67,0.59
 2025/4/18,50,7,1,9,5,14.00,32.00,-0.20
 2025/4/21,58,16,6,2,2,27.00,31.03,1.75
@@ -9,3 +9,4 @@ Data,Open_High_Over_Than_Three_Number,Total_Increase_limit,Total_Increase_limit_
 2025/4/28,112,13,10,8,7,11.61,18.75,-1.29
 2025/4/29,104,21,17,8,3,20.19,27.88,0.82
 2025/4/30,94,25,21,7,6,26.60,34.04,0.88
+2025/5/6,79,17,7,7,3,21.52,30.38,2.72
