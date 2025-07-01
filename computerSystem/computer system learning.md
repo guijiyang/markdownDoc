@@ -47,7 +47,7 @@
 
 ### gcc编译过程
 
-![compile_procedure](./diagram/gcc_compile_procedure.drawio.png)
+![compile_procedure](./diagram/gcc_compile_procedure.drawio.png){title="图 1.1 gcc编译过程"}
 
 - 预处理：预编译器修改源代码，在 `#include <stdio.h>`行读入系统头文件`stdio.h`并直接插入到该行，结果生成`.i`后缀的源代码；
 - 编译：编译器翻译`hello.i`到`hello.s`，这是一个汇编代码程序。
@@ -56,7 +56,7 @@
 
 ### 典型系统的硬件组织
 
-![system_hardware_organization](./diagram/system_hardware_organization.drawio.png)
+![system_hardware_organization](./diagram/system_hardware_organization.drawio.png "图 1.2 典型系统的硬件组织")
 
 总线：用于各个组件之间传递字节信息，通常设置成传输固定尺寸字节块`words`。`word`中的字节数是计算机系统的基础参数。大多数现代机器`word`尺寸是4bytes(32位)或8bytes(64位)。
 IO设备：用于系统和外部世界连接：这些设备包括键盘、鼠标、显示器，硬盘和网络等。
@@ -65,21 +65,15 @@ IO设备：用于系统和外部世界连接：这些设备包括键盘、鼠标
 
 ### hello程序的运行过程
 
-![system_hardware_organization](./diagram/hello_execute_procedure.drawio.png)
-
-==图 1.3 从键盘读入命令 hello==
+![system_hardware_organization](./diagram/hello_execute_procedure.drawio.png "图 1.3 从键盘读入命令")
 
 - 首先，shell程序执行指令，等待用户输入命令，当我们通过键盘输入`./hello`字符串，shell程序将这些字符分别读入到寄存器，然后存储到主存中(图 1.3)。
 - 当我们在键盘输入`enter`，`shell`知道我们完成了命令键入。然后`shell`加载可执行的`hello`文件，通过执行一系列指令复制硬盘中hello文件中的代码和数据到主存中。
 - 使用直接内存访问(DMA)技术，数据直接从硬盘传递到主存中，而不需要通过处理器(图 1.4)。
-![load_hello_from_disk_to_memory](./diagram/load_hello_from_disk_to_memory.drawio.png)
-
-==图 1.4 将可执行文件从硬盘加载到主存==
+![load_hello_from_disk_to_memory](./diagram/load_hello_from_disk_to_memory.drawio.png "图 1.4 将可执行文件从硬盘加载到主存")
 
 - 一旦hello对象的代码和数据加载到主存中，处理器开始执行hello程序的机器指令，这些指令复制字符串`hello, world\n`字节到寄存器文件，然后从寄存器到显示设备，并在屏幕上显示(图 1.5)。
-![write_string_from_memory_to_display](./diagram/write_string_from_memory_to_display.drawio.png)
-
-==图 1.5 从主存读取字符串并显示==
+![write_string_from_memory_to_display](./diagram/write_string_from_memory_to_display.drawio.png "图 1.5 从主存读取字符串并显示"){}
 
 ### 内存层次
 
